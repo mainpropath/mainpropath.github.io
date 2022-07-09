@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="普通单链表、单向循环链表和双向循环链表、如何判断链表中是否包含环和入环点的确定、链表的合并。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构：动态链表（C语言描述）">
+<meta property="og:url" content="https://couraki.com/2021/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8A%A8%E6%80%81%E9%93%BE%E8%A1%A8%EF%BC%88C%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0%EF%BC%89/index.html">
+<meta property="og:site_name" content="bubble | blog">
+<meta property="og:description" content="普通单链表、单向循环链表和双向循环链表、如何判断链表中是否包含环和入环点的确定、链表的合并。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/e03e67b05c38154e3f2b006ea9937b8b.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2021-07-04T03:05:36.000Z">
+<meta property="article:modified_time" content="2022-07-09T04:11:25.385Z">
+<meta property="article:author" content="bubble">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+
+<link rel="canonical" href="https://couraki.com/2021/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8A%A8%E6%80%81%E9%93%BE%E8%A1%A8%EF%BC%88C%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据结构：动态链表（C语言描述） | bubble | blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">bubble | blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description"> </p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://couraki.com/2021/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8A%A8%E6%80%81%E9%93%BE%E8%A1%A8%EF%BC%88C%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="bubble">
+      <meta itemprop="description" content="五彩斑斓的泡泡">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bubble | blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构：动态链表（C语言描述）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-04 11:05:36" itemprop="dateCreated datePublished" datetime="2021-07-04T11:05:36+08:00">2021-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-09 12:11:25" itemprop="dateModified" datetime="2022-07-09T12:11:25+08:00">2022-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">普通单链表、单向循环链表和双向循环链表、如何判断链表中是否包含环和入环点的确定、链表的合并。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="普通单链表"><a href="#普通单链表" class="headerlink" title="普通单链表"></a><strong>普通单链表</strong></h1><p>这里我只是简单的定义了一个长度为10的单链表并输出相关内容，并没有写创建、插入、删除、查找等相关功能。对链表熟悉了之后就会发现创建链表的头插法和尾插法只是两个模板而已。下面的代码创建链表的方法就十分简单。</p>
+<p><strong>普通单链表不从头节点开始遍历就无法遍历完全部的节点。</strong>这在某些情况下具有很大的弊端。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;stdlib.h&gt;</span><br><span class="line">typedef struct List&#123;//定义结构体	</span><br><span class="line">	int number;</span><br><span class="line">	struct List *next;</span><br><span class="line">&#125;L;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;	</span><br><span class="line">	L *p=(L*)malloc(sizeof(struct List));//需要进行处理的节点</span><br><span class="line">	p-&gt;next=(L*)malloc(sizeof(struct List));//给下一个节点分配内存</span><br><span class="line">	p-&gt;number=0;//第一个节点数据域赋值 </span><br><span class="line">	L *head=p;//头节点保留初始节点地址 </span><br><span class="line">	</span><br><span class="line">	for(int i=1;i&lt;10;i++)&#123;//创建一个长度为10的链表，头节点带数据这里只需要进行9次循环即可 </span><br><span class="line">		p=p-&gt;next;//指向下一个节点	</span><br><span class="line">		p-&gt;number=i;//赋值 </span><br><span class="line">		p-&gt;next=(L*)malloc(sizeof(struct List));//分配内存 </span><br><span class="line">	&#125;</span><br><span class="line">	p-&gt;next=NULL;</span><br><span class="line">	</span><br><span class="line">	while(head)&#123;//输出数据 </span><br><span class="line">		printf(&quot;%d  &quot;,head-&gt;number);</span><br><span class="line">		head=head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">//输出结果：0  1  2  3  4  5  6  7  8  9		</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="单向循环链表"><a href="#单向循环链表" class="headerlink" title="单向循环链表"></a><strong>单向循环链表</strong></h1><p>顾名思义，<strong>单向：朝着一个方向移动节点。循环：形成了一个环，可以循环输出。</strong></p>
+<p>循环链表也很简单，就只需要将上面写的代码进行一点更改，<strong>让最后一个节点指向的下一个节点不指向NULL，而是指向头节点。</strong>这样就形成了一个环。</p>
+<p><strong>循环链表判断为空的条件：当前节点指向下一个节点的指针是否等于当前节点。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;stdlib.h&gt;</span><br><span class="line">typedef struct List&#123;//定义结构体	</span><br><span class="line">	int number;</span><br><span class="line">	struct List *next;</span><br><span class="line">&#125;L;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;	</span><br><span class="line">	L *p=(L*)malloc(sizeof(struct List));//需要进行处理的节点</span><br><span class="line">	p-&gt;next=(L*)malloc(sizeof(struct List));//给下一个节点分配内存</span><br><span class="line">	p-&gt;number=0;//第一个节点数据域赋值 </span><br><span class="line">	L *head=p;//头节点保留初始节点地址 </span><br><span class="line">	</span><br><span class="line">	for(int i=1;i&lt;10;i++)&#123;//创建一个长度为10的链表，头节点带数据这里只需要进行9次循环即可 </span><br><span class="line">		p=p-&gt;next;//指向下一个节点	</span><br><span class="line">		p-&gt;number=i;//赋值 </span><br><span class="line">		p-&gt;next=(L*)malloc(sizeof(struct List));//分配内存 </span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	//指向头节点形成循环链表 </span><br><span class="line">	p-&gt;next=head;</span><br><span class="line">	</span><br><span class="line">	int count=20;</span><br><span class="line">    //这里如果不设置次数的话就陷入死循环</span><br><span class="line">	while(count--)&#123;//输出数据 </span><br><span class="line">		printf(&quot;%d  &quot;,head-&gt;number);</span><br><span class="line">		head=head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">//输出结果：0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9		</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="双向循环链表"><a href="#双向循环链表" class="headerlink" title="双向循环链表"></a><strong>双向循环链表</strong></h1><p>顾名思义，<strong>双向：两个方向都可以移动节点。循环：形成了一个环，可以循环输出。</strong></p>
+<p><strong>双向循环链表只需要在单向循环链表的基础上加一个指向当前节点前一个节点的指针即可。</strong>直接看代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;stdlib.h&gt;</span><br><span class="line">typedef struct List&#123;//定义结构体	</span><br><span class="line">	int number;</span><br><span class="line">	struct List *next;</span><br><span class="line">	struct List *previous;//指向前一个节点的指针。 </span><br><span class="line">&#125;L;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;	</span><br><span class="line">	L *p=(L*)malloc(sizeof(struct List));//需要进行处理的节点</span><br><span class="line">	p-&gt;next=(L*)malloc(sizeof(struct List));//给下一个节点分配内存</span><br><span class="line">	p-&gt;previous=(L*)malloc(sizeof(struct List));//当前节点指向上一个节点的指针分配内存 </span><br><span class="line">	p-&gt;next-&gt;previous=(L*)malloc(sizeof(struct List));//给下一个节点指向上一个节点的指针分配内存</span><br><span class="line">	p-&gt;next-&gt;previous=p;//下一个节点指向上一个节点的指针指向当前节点 </span><br><span class="line">	p-&gt;number=0;//第一个节点数据域赋值 </span><br><span class="line">	L *head=p;//头节点保留初始节点地址 </span><br><span class="line">	</span><br><span class="line">	for(int i=1;i&lt;10;i++)&#123;//创建一个长度为10的链表，头节点带数据这里只需要进行9次循环即可 </span><br><span class="line">		p=p-&gt;next;//指向下一个节点</span><br><span class="line">		p-&gt;number=i;//赋值</span><br><span class="line">		p-&gt;next=(L*)malloc(sizeof(struct List));//分配内存 </span><br><span class="line">		p-&gt;next-&gt;previous=(L*)malloc(sizeof(struct List));</span><br><span class="line">		p-&gt;next-&gt;previous=p;</span><br><span class="line">	&#125;</span><br><span class="line">	 </span><br><span class="line">	p-&gt;next=head;//尾节点指向下一个节点的指针指向头节点 </span><br><span class="line">	head-&gt;previous=p;//头节点指向上一个节点的指针指向尾节点 </span><br><span class="line"></span><br><span class="line">	int count=20;</span><br><span class="line">    //这里如果不设置次数的话就陷入死循环</span><br><span class="line">	while(count--)&#123;//正向输出数据 </span><br><span class="line">		printf(&quot;%d  &quot;,head-&gt;number);</span><br><span class="line">		head=head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">	printf(&quot;\n&quot;);</span><br><span class="line">	count=20;</span><br><span class="line">	while(count--)&#123;//逆向输出数据 </span><br><span class="line">		printf(&quot;%d  &quot;,p-&gt;number);</span><br><span class="line">		p=p-&gt;previous;</span><br><span class="line">	&#125;</span><br><span class="line">//输出结果： 0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9</span><br><span class="line">//          9  8  7  6  5  4  3  2  1  0  9  8  7  6  5  4  3  2  1  0		</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="判断链表当中是否有环以及入环点"><a href="#判断链表当中是否有环以及入环点" class="headerlink" title="判断链表当中是否有环以及入环点"></a><strong>判断链表当中是否有环以及入环点</strong></h1><p>下面这篇博客就讲的很清楚，思路最简单的还是<strong>穷举遍历和快慢指针</strong>两种方法，通俗易懂。</p>
+<p><em><strong>*<a target="_blank" rel="noopener" href="https://blog.csdn.net/u010983881/article/details/78896293">【算法】如何判断链表有环_Mlib-CSDN博客_判断链表中是否有环</a>*</strong></em></p>
+<h1 id="链表的合并"><a href="#链表的合并" class="headerlink" title="链表的合并"></a><strong>链表的合并</strong></h1><p>普通单链表的合并：A链表尾节点的next指针指向B链表的头节点。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Aend-&gt;next=Bhead;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>单向循环链表的合并：A循环链表尾节点的next指针指向B链表的头节点之后，B循环链表的尾节点的next指针指向A链表的头节点。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Aend-&gt;next=Bhead;</span><br><span class="line">Bend-&gt;next=Ahead;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>双向循环链表的合并：在单向循环链表合并的基础上将A循环链表的previous指针指向B循环链表的尾节点，然后将B循环链表头节点的previous指针指向A节点的尾节点。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Aend-&gt;next=Bhead;</span><br><span class="line">Bend-&gt;next=Ahead;</span><br><span class="line">Ahead-&gt;previous=Bend;</span><br><span class="line">Bhead-&gt;previous=Aend;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a><strong>例题</strong></h1><h2 id="一-约瑟夫环问题"><a href="#一-约瑟夫环问题" class="headerlink" title="一.约瑟夫环问题"></a><strong>一.约瑟夫环问题</strong></h2><p>已知 n 个人（以编号 1，2，3，…，n 分别表示）围坐在一张圆桌周围，从编号为 k 的人开始顺时针报数，数到 m 的那个人出列；他的下一个人又从 1 还是顺时针开始报数，数到 m 的那个人又出列；依次重复下去，<strong>要求找到最后出列的那个人?</strong></p>
+<p> 例如有 5 个人，要求从编号为 3 的人开始，数到 2 的那个人出列：</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/e03e67b05c38154e3f2b006ea9937b8b.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>出列顺序依次为：<br> 编号为 3 的人开始数 1，然后 4 数 2，所以 4 先出列；<br> 4 出列后，从 5 开始数 1，1 数 2，所以 1 出列；<br> 1 出列后，从 2 开始数 1，3 数 2，所以 3 出列；<br> 3 出列后，从 5 开始数 1，2 数 2，所以 2 出列；<br> 最后只剩下 5 自己，所以 5 出列。</p>
+<h2 id="二-魔术师发牌问题"><a href="#二-魔术师发牌问题" class="headerlink" title="二.魔术师发牌问题"></a><strong>二.魔术师发牌问题</strong></h2><p>一位魔术师掏出一叠扑克牌，魔术师取出其中13张黑桃，洗好后，把牌面朝下。<br> 说：“我不看牌，只数一数就能知道每张牌是什么？”魔术师口中念一，将第一张牌翻过来看正好是A；<br> 魔术师将黑桃A放到桌上，继续数手里的余牌，<br> 第二次数1，2，将第一张牌放到这叠牌的下面，将第二张牌翻开，正好是黑桃2，也把它放在桌子上。<br> 第三次数1，2，3，前面二张牌放到这叠牌的下面，取出第三张牌，正好是黑桃3，这样依次将13张牌翻出，全部都准确无误。<br> 求解：**魔术师手中牌的原始顺序是什么样子的?**。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>bubble
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://couraki.com/2021/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8A%A8%E6%80%81%E9%93%BE%E8%A1%A8%EF%BC%88C%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0%EF%BC%89/" title="数据结构：动态链表（C语言描述）">https://couraki.com/2021/07/04/数据结构：动态链表（C语言描述）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/10/C%E8%AF%AD%E8%A8%80%E9%A2%98%E8%A7%A3%EF%BC%9A%E7%A0%B4%E6%8D%9F%E7%9A%84%E9%94%AE%E7%9B%98/" rel="prev" title="C语言题解：破损的键盘">
+      <i class="fa fa-chevron-left"></i> C语言题解：破损的键盘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/07/%E6%AC%A2%E8%BF%8E%E5%85%89%E4%B8%B4/" rel="next" title="欢迎光临">
+      欢迎光临 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E5%8D%95%E9%93%BE%E8%A1%A8"><span class="nav-number">1.</span> <span class="nav-text">普通单链表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">单向循环链表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">双向循环链表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E9%93%BE%E8%A1%A8%E5%BD%93%E4%B8%AD%E6%98%AF%E5%90%A6%E6%9C%89%E7%8E%AF%E4%BB%A5%E5%8F%8A%E5%85%A5%E7%8E%AF%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">判断链表当中是否有环以及入环点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%90%88%E5%B9%B6"><span class="nav-number">5.</span> <span class="nav-text">链表的合并</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF%E9%97%AE%E9%A2%98"><span class="nav-number">6.1.</span> <span class="nav-text">一.约瑟夫环问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E9%AD%94%E6%9C%AF%E5%B8%88%E5%8F%91%E7%89%8C%E9%97%AE%E9%A2%98"><span class="nav-number">6.2.</span> <span class="nav-text">二.魔术师发牌问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bubble"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">bubble</p>
+  <div class="site-description" itemprop="description">五彩斑斓的泡泡</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mainpropath" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mainpropath" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/xxxxxxxxxx@qq.com" title="E-Mail → xxxxxxxxxx@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      链接网址
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/weixin_41746479?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_41746479?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; Wed Aug 18 2021 08:00:00 GMT+0800 (中国标准时间) – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bubble</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">21k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">19 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
