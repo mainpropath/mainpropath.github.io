@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="常用操作、条件查询、模糊查询、分组查询、多表查询、子查询、分页查询、联合查询、插入数据、修改数据、删除数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql数据库操作总结">
+<meta property="og:url" content="https://couraki.com/2022/06/04/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="bubble | blog">
+<meta property="og:description" content="常用操作、条件查询、模糊查询、分组查询、多表查询、子查询、分页查询、联合查询、插入数据、修改数据、删除数据。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2022-06-04T07:31:58.000Z">
+<meta property="article:modified_time" content="2022-07-09T07:37:13.982Z">
+<meta property="article:author" content="bubble">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+
+<link rel="canonical" href="https://couraki.com/2022/06/04/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mysql数据库操作总结 | bubble | blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/mainpropath/" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">bubble | blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description"> </p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://couraki.com/2022/06/04/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="bubble">
+      <meta itemprop="description" content="五彩斑斓的泡泡">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bubble | blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql数据库操作总结
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-04 15:31:58" itemprop="dateCreated datePublished" datetime="2022-06-04T15:31:58+08:00">2022-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-09 15:37:13" itemprop="dateModified" datetime="2022-07-09T15:37:13+08:00">2022-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>7 分钟</span>
+            </span>
+            <div class="post-description">常用操作、条件查询、模糊查询、分组查询、多表查询、子查询、分页查询、联合查询、插入数据、修改数据、删除数据。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a><strong>常用操作</strong></h1><h2 id="起别名"><a href="#起别名" class="headerlink" title="起别名"></a><strong>起别名</strong></h2><p>起别名时，如果别名有特殊字符，用双引号或者单引号将别名包括起来。（“别名”）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  字段名 <span class="keyword">AS</span> 别名 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="去重"><a href="#去重" class="headerlink" title="去重"></a><strong>去重</strong></h2><p>去重关键字：distinct。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">  字段名</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a><strong>字符串拼接</strong></h2><p>concat(字段名A，字段名B)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  CONCAT(字段名, 字段名) </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>查询结果为两个字段查询的结果拼接在一起</p>
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a><strong>排序</strong></h2><p>order by 字段名 （asc或者desc）</p>
+<p><strong>asc表示升序排序，desc表示降序排序，默认是升序排序。</strong>同时Mysql的排序支持多关键字排序，也就是说，某一个字段的内容相同，可以在此基础上用另一个字段进行再排序。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  字段名 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> 字段名 <span class="keyword">DESC</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>多字段排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line"> 字段名 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> 字段名A <span class="keyword">ASC</span>,字段名B <span class="keyword">ASC</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a><strong>条件查询</strong></h1><h2 id="条件运算符"><a href="#条件运算符" class="headerlink" title="条件运算符"></a><strong>条件运算符</strong></h2><p>大于：&gt; ，小于：&lt; ，等于： &#x3D; ，不等于： !&#x3D; 或者用 &lt;&gt;，大于等于： &gt;&#x3D; ，小于等于： &lt;&#x3D;</p>
+<h2 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a><strong>逻辑运算符</strong></h2><p>与逻辑： &amp;&amp; 或者用 and，或逻辑： || 或者用 or，非逻辑： ! 或者用 not</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&gt;</span> <span class="number">12000</span> </span><br><span class="line">  <span class="keyword">AND</span> salary <span class="operator">&lt;</span> <span class="number">120000</span> </span><br><span class="line">  <span class="keyword">AND</span> last_name <span class="operator">=</span> <span class="string">&#x27;小红&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="模糊查询"><a href="#模糊查询" class="headerlink" title="模糊查询"></a><strong>模糊查询</strong></h1><h2 id="like关键字与通配符"><a href="#like关键字与通配符" class="headerlink" title="like关键字与通配符"></a><strong>like关键字与通配符</strong></h2><p><strong>%通配符：</strong>匹配任意多个字符，包含0个字符。</p>
+<p><strong>_通配符：</strong>匹配单个字符。</p>
+<p>在表中查询名字中第三个字符为e，以字符a结尾的人的信息</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> first_name <span class="keyword">LIKE</span> <span class="string">&#x27;__e%a&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="转义字符"><a href="#转义字符" class="headerlink" title="转义字符"></a><strong>转义字符</strong></h2><p>如果我们要模糊查询字段内容中包含%、_通配符的信息时，要使用转义字符进行转移。</p>
+<p><strong>默认转义字符：</strong>\</p>
+<p><strong>指定转义字符：</strong>ESCAPE ‘指定的转义字符’</p>
+<p><strong>下面两句查询语句效果是相同的</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> last_name <span class="keyword">LIKE</span> <span class="string">&#x27;_$_%&#x27;</span> <span class="keyword">ESCAPE</span> <span class="string">&#x27;$&#x27;</span> ;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> last_name <span class="keyword">LIKE</span> <span class="string">&#x27;_\_%&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="between-and关键字"><a href="#between-and关键字" class="headerlink" title="between and关键字"></a><strong>between and关键字</strong></h2><p>使用between and 关键字进行查询，表示某字段的值在这一范围内，并且<strong>包含边界值。</strong></p>
+<p>例：查询员工id在100到200区间内的员工信息。（包含100和200）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> employee_id <span class="keyword">BETWEEN</span> <span class="number">100</span> </span><br><span class="line">  <span class="keyword">AND</span> <span class="number">200</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="in关键字"><a href="#in关键字" class="headerlink" title="in关键字"></a><strong>in关键字</strong></h2><p>使用in关键字进行查询，表示某字段的值是否在in列表当中。in列表当中的值必须类型一致或者兼容，例如 ‘100’ 和 100 就是兼容的。</p>
+<p>例：查询名字在in列表当中的数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> last_name <span class="keyword">IN</span> (<span class="string">&#x27;Kochhar&#x27;</span>, <span class="string">&#x27;De Haan&#x27;</span>) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="is-null-和-is-not-null-关键字"><a href="#is-null-和-is-not-null-关键字" class="headerlink" title="is null 和 is not null 关键字"></a><strong>is null 和 is not null 关键字</strong></h2><p>顾名思义，is null 就是查询某字段为null，is not null 就是查询某字段不为null。在Mysql数据库当中，判断等于null不能直接使用等号来进行判断。</p>
+<p>例：查询条件为某字段为null</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> commission_pct <span class="keyword">IS</span> <span class="keyword">NULL</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>例：查询条件为某字段不为null</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> commission_pct <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="分组查询"><a href="#分组查询" class="headerlink" title="分组查询"></a><strong>分组查询</strong></h1><h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a><strong>简单使用</strong></h2><p>下面的sql语句可以理解为，查询出job_id，然后按照job_id进行分组，分别得到每一组的最大工资。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">MAX</span>(salary),</span><br><span class="line">  job_id </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job_id ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="分组前添加筛选条件"><a href="#分组前添加筛选条件" class="headerlink" title="分组前添加筛选条件"></a><strong>分组前添加筛选条件</strong></h2><p><strong>分组前添加筛选条件使用where，将查询到的结果再进行分组。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">MAX</span>(salary) <span class="keyword">AS</span> 最高工资,</span><br><span class="line">  job_id </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> email <span class="keyword">LIKE</span> <span class="string">&#x27;%a%&#x27;</span> </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job_id ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="分组后添加筛选条件"><a href="#分组后添加筛选条件" class="headerlink" title="分组后添加筛选条件"></a><strong>分组后添加筛选条件</strong></h2><p><strong>分组后添加筛选条件用having，将分组后的数据再筛选。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">MAX</span>(salary) <span class="keyword">AS</span> 最高工资,</span><br><span class="line">  job_id </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> email <span class="keyword">LIKE</span> <span class="string">&#x27;%a%&#x27;</span> </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job_id </span><br><span class="line"><span class="keyword">HAVING</span> 最高工资 <span class="operator">&gt;</span> <span class="number">10000</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="以函数为分组条件"><a href="#以函数为分组条件" class="headerlink" title="以函数为分组条件"></a><strong>以函数为分组条件</strong></h2><p><strong>可以以函数来当作分组的条件。</strong></p>
+<p>下面的查询就是以名字的长度来进行分组</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">MAX</span>(salary) <span class="keyword">AS</span> 最高工资,</span><br><span class="line">  LENGTH(last_name) <span class="keyword">AS</span> 长度 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> email <span class="keyword">LIKE</span> <span class="string">&#x27;%a%&#x27;</span> </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> 长度 </span><br><span class="line"><span class="keyword">HAVING</span> 最高工资 <span class="operator">&gt;</span> <span class="number">10000</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="按多字段分组"><a href="#按多字段分组" class="headerlink" title="按多字段分组"></a><strong>按多字段分组</strong></h2><p>下面的sql语句将查询结果按照部门id和工种id进行分组，部门id和工种id相同的分为一组。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">AVG</span>(salary) 平均工资,</span><br><span class="line">  department_id 部门id,</span><br><span class="line">  job_id 工种id </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> 部门id,</span><br><span class="line">  工种id </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> 平均工资 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a><strong>多表查询</strong></h1><p>当查询的字段来自多个表时，就需要使用多表查询</p>
+<h2 id="等值连接"><a href="#等值连接" class="headerlink" title="等值连接"></a><strong>等值连接</strong></h2><p>按照字段的内容进行连接</p>
+<p>下面的sql语句从两个表中查找数据，将beauty表中的boyfriend_id字段和boys表中id字段进行连接。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  `name`,</span><br><span class="line">  boyName </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  boys,</span><br><span class="line">  beauty </span><br><span class="line"><span class="keyword">WHERE</span> beauty.boyfriend_id <span class="operator">=</span> boys.id ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>如果有查询的不同表之间存在字段名相同的情况，我们就需要用表名来限定字段。</p>
+<p>下面的sql语句对表名取别名，通过表名来限定字段，<strong>对表名取了别名之后，不能再用原表名来限定字段。</strong> </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  emp.last_name,</span><br><span class="line">  emp.job_id,</span><br><span class="line">  job.job_title </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees emp,</span><br><span class="line">  jobs job </span><br><span class="line"><span class="keyword">WHERE</span> emp.`job_id` <span class="operator">=</span> job.`job_id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>上面的sql语句标准为sql92，我们还可以<strong>参照sql99的标准写成如下形式，效果相同，语法不同。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  emp.last_name,</span><br><span class="line">  emp.job_id,</span><br><span class="line">  job.job_title </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees emp </span><br><span class="line">  <span class="keyword">INNER</span> <span class="keyword">JOIN</span> jobs job </span><br><span class="line">    <span class="keyword">ON</span> emp.`job_id` <span class="operator">=</span> job.`job_id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> <strong>多个表联合查询时，只需要添加 inner join 表名 on 连接条件 即可。</strong></p>
+<h2 id="非等值连接"><a href="#非等值连接" class="headerlink" title="非等值连接"></a><strong>非等值连接</strong></h2><p>下面的sql语句连接条件是一个范围，根据工资的范围显示工资的等级。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  emp.last_name,</span><br><span class="line">  emp.job_id,</span><br><span class="line">  job.grade_level </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees emp,</span><br><span class="line">  job_grades job </span><br><span class="line"><span class="keyword">WHERE</span> emp.`salary` <span class="keyword">BETWEEN</span> job.`lowest_sal` </span><br><span class="line">  <span class="keyword">AND</span> job.`highest_sal` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>sql99标准写法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  emp.last_name,</span><br><span class="line">  emp.job_id,</span><br><span class="line">  job.grade_level </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees emp </span><br><span class="line">  <span class="keyword">INNER</span> <span class="keyword">JOIN</span> job_grades job </span><br><span class="line">    <span class="keyword">ON</span> emp.`salary` <span class="keyword">BETWEEN</span> job.`lowest_sal` </span><br><span class="line">    <span class="keyword">AND</span> job.`highest_sal` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="自连接"><a href="#自连接" class="headerlink" title="自连接"></a><strong>自连接</strong></h2><p>顾名思义，就是当前表自己和自己连接在一起</p>
+<p>例：下面的sql语句将自己表中的员工信息和上级信息连接在一起，<strong>自连接时，由于是在同一张表中查询，需要给表设置别名，这样才能区分查询的字段。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  员工.`employee_id` 员工id,</span><br><span class="line">  员工.`last_name` 员工名,</span><br><span class="line">  上级.`employee_id` 上级id,</span><br><span class="line">  上级.`last_name` 上级名 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees 员工,</span><br><span class="line">  employees 上级 </span><br><span class="line"><span class="keyword">WHERE</span> 员工.`manager_id` <span class="operator">=</span> 上级.`employee_id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>sql99标准写法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  员工.`employee_id` 员工id,</span><br><span class="line">  员工.`last_name` 员工名,</span><br><span class="line">  上级.`employee_id` 上级id,</span><br><span class="line">  上级.`last_name` 上级名 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees 员工 </span><br><span class="line">  <span class="keyword">INNER</span> <span class="keyword">JOIN</span> employees 上级 </span><br><span class="line">    <span class="keyword">ON</span> 员工.`manager_id` <span class="operator">=</span> 上级.`employee_id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a><strong>外连接</strong></h2><p>外连接查询结果为主表中的所有记录，如果从表当中有匹配的数据，就显示匹配的值，否则显示null。</p>
+<h3 id="左外连接"><a href="#左外连接" class="headerlink" title="左外连接"></a><strong>左外连接</strong></h3><p><strong>left (outer) join 表名 on 连接条件</strong></p>
+<p>以左边的表为主表，右边的表为从表建立连接</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  b1.`name`,</span><br><span class="line">  b1.`boyfriend_id`,</span><br><span class="line">  b2.`id`,</span><br><span class="line">  b2.`boyName` </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  beauty b1 </span><br><span class="line">  <span class="keyword">LEFT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> boys b2 </span><br><span class="line">    <span class="keyword">ON</span> b1.`boyfriend_id` <span class="operator">=</span> b2.`id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h3 id="右外连接"><a href="#右外连接" class="headerlink" title="右外连接"></a><strong>右外连接</strong></h3><p><strong>right (outer) join 表名 on 连接条件</strong></p>
+<p>以右边的表为主表，左边的表为从表建立连接</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  b1.`name`,</span><br><span class="line">  b1.`boyfriend_id`,</span><br><span class="line">  b2.`id`,</span><br><span class="line">  b2.`boyName` </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  beauty b1 </span><br><span class="line">  <span class="keyword">RIGHT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> boys b2 </span><br><span class="line">    <span class="keyword">ON</span> b1.`boyfriend_id` <span class="operator">=</span> b2.`id` ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h3 id="全外连接"><a href="#全外连接" class="headerlink" title="全外连接"></a><strong>全外连接</strong></h3><p>Mysql不支持这种形式</p>
+<p>全外连接查询结果&#x3D;内连接结果+表1中有但是表2中没有的+表2中有但是表1中没有的</p>
+<h3 id="交叉连接"><a href="#交叉连接" class="headerlink" title="交叉连接"></a><strong>交叉连接</strong></h3><p><strong>cross join 表名</strong></p>
+<p>查询结果为两个表的笛卡尔乘积</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  beauty b1 </span><br><span class="line">  <span class="keyword">CROSS</span> <span class="keyword">JOIN</span> boys b2 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a><strong>子查询</strong></h1><p>出现在语句内部的select语句，称为子查询或内查询，查询语句内部嵌套了其他select语句的查询称为外查询或主查询。</p>
+<p>按结果集的行列数不同划分如下：</p>
+<p>标量子查询：结果集一行一列</p>
+<p>列子查询：结果集一列多行</p>
+<p>行子查询：结果集一行多列</p>
+<p>表子查询：结果集一般为多行多列</p>
+<h2 id="where后面的标量子查询"><a href="#where后面的标量子查询" class="headerlink" title="where后面的标量子查询"></a><strong>where后面的标量子查询</strong></h2><p>子查询的结果为一行一列并且放在where后面</p>
+<p>下面的sql语句查询工种和员工id141的员工相同，并且工资大于员工id为143的人的信息</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name,</span><br><span class="line">  job_id,</span><br><span class="line">  salary </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> job_id <span class="operator">=</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    job_id </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> employee_id <span class="operator">=</span> <span class="number">141</span>) </span><br><span class="line">  <span class="keyword">AND</span> salary <span class="operator">&gt;</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    salary </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> employee_id <span class="operator">=</span> <span class="number">143</span>) </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="where后面的列子查询"><a href="#where后面的列子查询" class="headerlink" title="where后面的列子查询"></a><strong>where后面的列子查询</strong></h2><p>操作符：</p>
+<p>in&#x2F;not in ：等于或不等于列表中的任意一个。</p>
+<p>any&#x2F;some：两个关键字达到的效果相同，都是和子查询的结果的某一个值进行比较，满足其中一个条件即可。</p>
+<p>all：和子查询的结果的所有值进行比较，满足所有条件才行。</p>
+<p>使用in&#x2F;not in，查询location_id是1400或1700的部门中的所有员工姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> department_id <span class="keyword">IN</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    department_id </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    departments </span><br><span class="line">  <span class="keyword">WHERE</span> location_id <span class="keyword">IN</span> (<span class="number">1400</span>, <span class="number">1700</span>)) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>使用any&#x2F;some，查询其他工种中比job_id为IT_PROG任一工资低的员工的员工号、姓名、job_id以及salary。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name,</span><br><span class="line">  employee_id,</span><br><span class="line">  job_id,</span><br><span class="line">  salary </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&lt;</span> <span class="keyword">ANY</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    salary </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> job_id <span class="operator">=</span> <span class="string">&#x27;IT_PROG&#x27;</span>) </span><br><span class="line">  <span class="keyword">AND</span> job_id <span class="operator">!=</span> <span class="string">&#x27;IT_PROG&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>使用any&#x2F;some代码可读性不高，我们通常采用如下写法达到相同的效果。因为any是满足一个条件即可，那么可以写作小于查询结果集中最高工资。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name,</span><br><span class="line">  employee_id,</span><br><span class="line">  job_id,</span><br><span class="line">  salary </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&lt;</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    <span class="built_in">MAX</span>(salary) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> job_id <span class="operator">=</span> <span class="string">&#x27;IT_PROG&#x27;</span>) </span><br><span class="line">  <span class="keyword">AND</span> job_id <span class="operator">!=</span> <span class="string">&#x27;IT_PROG&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>使用all，查询其他部门中比job_id为IT_PROG的部门所有工资都低的员工的员工号、姓名、job_id以及salary。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name,</span><br><span class="line">  employee_id,</span><br><span class="line">  job_id,</span><br><span class="line">  salary </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&lt;</span> <span class="keyword">ALL</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    salary </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> job_id <span class="operator">=</span> <span class="string">&#x27;IT_PROG&#x27;</span>) </span><br><span class="line">  <span class="keyword">AND</span> job_id <span class="operator">!=</span> <span class="string">&#x27;IT_PROG&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>all代码可读性也不高，由于all是要满足所有的条件，那么可以用min函数来简化。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  last_name,</span><br><span class="line">  employee_id,</span><br><span class="line">  job_id,</span><br><span class="line">  salary </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&lt;</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    <span class="built_in">MIN</span>(salary) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> job_id <span class="operator">=</span> <span class="string">&#x27;IT_PROG&#x27;</span>) </span><br><span class="line">  <span class="keyword">AND</span> job_id <span class="operator">!=</span> <span class="string">&#x27;IT_PROG&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="where后面的行子查询"><a href="#where后面的行子查询" class="headerlink" title="where后面的行子查询"></a><strong>where后面的行子查询</strong></h2><p>查询员工编号最小并且工资最高的员工信息</p>
+<p>通过标量子查询能够达到上面的要求</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> employee_id <span class="operator">=</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">MIN</span>(employee_id) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees) </span><br><span class="line">  <span class="keyword">AND</span> salary <span class="operator">=</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">MAX</span>(salary) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>上面的代码略显重复，我们可以通过行子查询来简化。 </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line"><span class="keyword">WHERE</span> (employee_id, salary) <span class="operator">=</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">MIN</span>(employee_id),</span><br><span class="line">    <span class="built_in">MAX</span>(salary) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="select-后面的子查询"><a href="#select-后面的子查询" class="headerlink" title="select 后面的子查询"></a><strong>select 后面的子查询</strong></h2><p><strong>子查询位于select后面的，仅仅支持标量子查询（即一行一列）。</strong></p>
+<p>将子查询语句直接写在select后面，下面的sql语句查询部门id和员工个数，<strong>select后面的子查询一般可以用其他的方式代替</strong>，并且效率更高。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  department_id,</span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees e </span><br><span class="line">  <span class="keyword">WHERE</span> e.department_id <span class="operator">=</span> d.department_id) <span class="keyword">AS</span> 员工个数 </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  departments d ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="from-后面的子查询"><a href="#from-后面的子查询" class="headerlink" title="from 后面的子查询"></a><strong>from 后面的子查询</strong></h2><p>下面的sql语句查询每个部门的平均工资的工资等级，相当于将from后面的子查询语句的结果当作了一个表，然后和job_grades表进行连接。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  ag_dep.<span class="operator">*</span>,</span><br><span class="line">  job.`grade_level` </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">AVG</span>(salary) ag,</span><br><span class="line">    department_id </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">GROUP</span> <span class="keyword">BY</span> department_id) ag_dep </span><br><span class="line">  <span class="keyword">INNER</span> <span class="keyword">JOIN</span> job_grades job </span><br><span class="line">    <span class="keyword">ON</span> ag_dep.ag <span class="keyword">BETWEEN</span> lowest_sal </span><br><span class="line">    <span class="keyword">AND</span> highest_sal ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="exists-后面的子查询"><a href="#exists-后面的子查询" class="headerlink" title="exists 后面的子查询"></a><strong>exists 后面的子查询</strong></h2><p><strong>这种查询不常用，了解即可。并且这种查询的功能可以用前面其他的查询方式代替，并且可读性更高。</strong></p>
+<p>查询结果为1或者0，当exists后面的子查询有值时为1，查询结果为空时为0.</p>
+<p>下面的sql语句查询是否有员工的工资大于30000</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="keyword">EXISTS</span> </span><br><span class="line">  (<span class="keyword">SELECT</span> </span><br><span class="line">    employee_id </span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    employees </span><br><span class="line">  <span class="keyword">WHERE</span> salary <span class="operator">=</span> <span class="number">30000</span>) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a><strong>分页查询</strong></h1><p>limit A , B ： 从第A条数据开始往后数B条数据返回，<strong>索引从0开始计算。</strong></p>
+<p>接下来的sql语句查询从第1条数据开始往后数5条数据。（即前五条数据）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  employees </span><br><span class="line">LIMIT <span class="number">0</span>, <span class="number">5</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a><strong>联合查询</strong></h1><p>查询的结果来自于多个表，且多个表之间没有直接的连接关系，但查询的信息一致时，就要使用联合查询。</p>
+<p>使用联合查询注意事项：</p>
+<p>1.多条查询语句的查询列数是一致的。</p>
+<p>2.多条查询语句查询的每一列的类型和内容最好顺序一致。</p>
+<p>3.union关键字默认去重，要显示全部的数据用union all。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  id,</span><br><span class="line">  cname,</span><br><span class="line">  csex </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  t_ca </span><br><span class="line"><span class="keyword">WHERE</span> csex <span class="operator">=</span> <span class="string">&#x27;男&#x27;</span> </span><br><span class="line"><span class="keyword">UNION</span></span><br><span class="line">#<span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  t_id,</span><br><span class="line">  tName,</span><br><span class="line">  tGender </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  t_ua </span><br><span class="line"><span class="keyword">WHERE</span> tGender <span class="operator">=</span> <span class="string">&#x27;male&#x27;</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a><strong>插入数据</strong></h1><h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a><strong>基本使用</strong></h2><p>字段名和数据要对应，顺序可以调换，可以为null的字段可以插入null。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 表名 (字段名<span class="number">1</span>, 字段名<span class="number">2</span>, ...) <span class="keyword">VALUE</span> (数据<span class="number">1</span>, 数据<span class="number">2</span>, ...) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>可以省略列名，默认插入所有列，而且列的顺序和表中列的顺序一致。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 表名 <span class="keyword">VALUE</span> (数据<span class="number">1</span>, 数据<span class="number">2</span>, ...) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="插入多行"><a href="#插入多行" class="headerlink" title="插入多行"></a><strong>插入多行</strong></h2><p> <strong>可以插入多行数据，用逗号分隔开即可。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 表名 (字段名<span class="number">1</span>, 字段名<span class="number">2</span>, ...) <span class="keyword">VALUE</span> (数据<span class="number">1</span>, 数据<span class="number">2</span>, ...),</span><br><span class="line">(数据<span class="number">1</span> <span class="number">.1</span>, 数据<span class="number">2</span> <span class="number">.1</span>, ...),</span><br><span class="line">(数据<span class="number">3</span> <span class="number">.1</span>, 数据<span class="number">3</span> <span class="number">.1</span>, ...) ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="支持子查询"><a href="#支持子查询" class="headerlink" title="支持子查询"></a><strong>支持子查询</strong></h2><p> <strong>支持子查询，可以将查询得到的数据插入进表中。注意格式、类型、长度的统一。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 表名 (字段名<span class="number">1</span>, 字段名<span class="number">2</span>, ...) </span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  字段名A,</span><br><span class="line">  字段名B,</span><br><span class="line">  ...</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表<span class="number">2</span> ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a><strong>修改数据</strong></h1><h2 id="修改单表数据"><a href="#修改单表数据" class="headerlink" title="修改单表数据"></a><strong>修改单表数据</strong></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> </span><br><span class="line">  表名 </span><br><span class="line"><span class="keyword">SET</span></span><br><span class="line">  字段名<span class="number">1</span> <span class="operator">=</span> 新值,</span><br><span class="line">  字段名<span class="number">2</span> <span class="operator">=</span> 新值 </span><br><span class="line"><span class="keyword">WHERE</span> 筛选条件 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="修改多表数据"><a href="#修改多表数据" class="headerlink" title="修改多表数据"></a><strong>修改多表数据</strong></h2><p> 修改多表的数据和查询类似，先连接不同的表，相当于建立了一个虚拟的表，再根据条件修改这个虚拟的表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> </span><br><span class="line">  表<span class="number">1</span> 别名<span class="number">1</span> </span><br><span class="line">  <span class="keyword">INNER</span><span class="operator">|</span><span class="keyword">left</span><span class="operator">|</span><span class="keyword">right</span> <span class="keyword">JOIN</span> 表<span class="number">2</span> 别名<span class="number">2</span> </span><br><span class="line">    <span class="keyword">ON</span> 连接条件 <span class="keyword">SET</span> 字段名 <span class="operator">=</span> 新值 </span><br><span class="line"><span class="keyword">WHERE</span> 筛选条件 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a><strong>删除数据</strong></h1><h2 id="单表删除"><a href="#单表删除" class="headerlink" title="单表删除"></a><strong>单表删除</strong></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表名 </span><br><span class="line"><span class="keyword">WHERE</span> 筛选条件 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>truncate 全部删除，不能加where条件，删除效率比delete高。</strong></p>
+<p><strong>使用truncate删除数据后，自增长列的值从1开始，而delete从断点开始。</strong></p>
+<p><strong>truncate删除没有返回值，并且不能回滚。</strong> </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span> 表名 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="多表删除"><a href="#多表删除" class="headerlink" title="多表删除"></a><strong>多表删除</strong></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> </span><br><span class="line">  表<span class="number">1</span>,</span><br><span class="line">  表<span class="number">2</span> </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  表<span class="number">1</span> </span><br><span class="line">  <span class="keyword">INNER</span><span class="operator">|</span><span class="keyword">left</span><span class="operator">|</span><span class="keyword">right</span> <span class="keyword">JOIN</span> 表<span class="number">2</span> </span><br><span class="line">    <span class="keyword">ON</span> 连接条件 </span><br><span class="line"><span class="keyword">WHERE</span> 筛选条件 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>bubble
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://couraki.com/2022/06/04/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93/" title="Mysql数据库操作总结">https://couraki.com/2022/06/04/Mysql数据库操作总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/02/Mysql%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/" rel="prev" title="Mysql常用函数总结">
+      <i class="fa fa-chevron-left"></i> Mysql常用函数总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/03/redis6%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%8F%8A%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93/" rel="next" title="redis6数据类型及操作总结">
+      redis6数据类型及操作总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81Njc4MS8zMzI0NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">常用操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%B7%E5%88%AB%E5%90%8D"><span class="nav-number">1.1.</span> <span class="nav-text">起别名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%BB%E9%87%8D"><span class="nav-number">1.2.</span> <span class="nav-text">去重</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5"><span class="nav-number">1.3.</span> <span class="nav-text">字符串拼接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F"><span class="nav-number">1.4.</span> <span class="nav-text">排序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.</span> <span class="nav-text">条件查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">2.1.</span> <span class="nav-text">条件运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">2.2.</span> <span class="nav-text">逻辑运算符</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.</span> <span class="nav-text">模糊查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#like%E5%85%B3%E9%94%AE%E5%AD%97%E4%B8%8E%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="nav-number">3.1.</span> <span class="nav-text">like关键字与通配符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AC%E4%B9%89%E5%AD%97%E7%AC%A6"><span class="nav-number">3.2.</span> <span class="nav-text">转义字符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#between-and%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.3.</span> <span class="nav-text">between and关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#in%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.4.</span> <span class="nav-text">in关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#is-null-%E5%92%8C-is-not-null-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.5.</span> <span class="nav-text">is null 和 is not null 关键字</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.</span> <span class="nav-text">分组查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">4.1.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E5%89%8D%E6%B7%BB%E5%8A%A0%E7%AD%9B%E9%80%89%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.2.</span> <span class="nav-text">分组前添加筛选条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E5%90%8E%E6%B7%BB%E5%8A%A0%E7%AD%9B%E9%80%89%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">分组后添加筛选条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E5%87%BD%E6%95%B0%E4%B8%BA%E5%88%86%E7%BB%84%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.4.</span> <span class="nav-text">以函数为分组条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E5%A4%9A%E5%AD%97%E6%AE%B5%E5%88%86%E7%BB%84"><span class="nav-number">4.5.</span> <span class="nav-text">按多字段分组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E8%A1%A8%E6%9F%A5%E8%AF%A2"><span class="nav-number">5.</span> <span class="nav-text">多表查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.1.</span> <span class="nav-text">等值连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%AD%89%E5%80%BC%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.2.</span> <span class="nav-text">非等值连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.3.</span> <span class="nav-text">自连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.4.</span> <span class="nav-text">外连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A6%E5%A4%96%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.4.1.</span> <span class="nav-text">左外连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%B3%E5%A4%96%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.4.2.</span> <span class="nav-text">右外连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%A4%96%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.4.3.</span> <span class="nav-text">全外连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.4.4.</span> <span class="nav-text">交叉连接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.</span> <span class="nav-text">子查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#where%E5%90%8E%E9%9D%A2%E7%9A%84%E6%A0%87%E9%87%8F%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.1.</span> <span class="nav-text">where后面的标量子查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#where%E5%90%8E%E9%9D%A2%E7%9A%84%E5%88%97%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.2.</span> <span class="nav-text">where后面的列子查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#where%E5%90%8E%E9%9D%A2%E7%9A%84%E8%A1%8C%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.3.</span> <span class="nav-text">where后面的行子查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select-%E5%90%8E%E9%9D%A2%E7%9A%84%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.4.</span> <span class="nav-text">select 后面的子查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#from-%E5%90%8E%E9%9D%A2%E7%9A%84%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.5.</span> <span class="nav-text">from 后面的子查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#exists-%E5%90%8E%E9%9D%A2%E7%9A%84%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">6.6.</span> <span class="nav-text">exists 后面的子查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2"><span class="nav-number">7.</span> <span class="nav-text">分页查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="nav-number">8.</span> <span class="nav-text">联合查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">9.</span> <span class="nav-text">插入数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">9.1.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E5%A4%9A%E8%A1%8C"><span class="nav-number">9.2.</span> <span class="nav-text">插入多行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E6%8C%81%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">9.3.</span> <span class="nav-text">支持子查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE"><span class="nav-number">10.</span> <span class="nav-text">修改数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%8D%95%E8%A1%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">10.1.</span> <span class="nav-text">修改单表数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%A4%9A%E8%A1%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">10.2.</span> <span class="nav-text">修改多表数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="nav-number">11.</span> <span class="nav-text">删除数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%A1%A8%E5%88%A0%E9%99%A4"><span class="nav-number">11.1.</span> <span class="nav-text">单表删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%A1%A8%E5%88%A0%E9%99%A4"><span class="nav-number">11.2.</span> <span class="nav-text">多表删除</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bubble"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">bubble</p>
+  <div class="site-description" itemprop="description">五彩斑斓的泡泡</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mainpropath" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mainpropath" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/xxxxxxxxxx@qq.com" title="E-Mail → xxxxxxxxxx@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      链接网址
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/weixin_41746479?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_41746479?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; Tue Aug 18 2020 08:00:00 GMT+0800 (中国标准时间) – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bubble</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">202k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:04</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>

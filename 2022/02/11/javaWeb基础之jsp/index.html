@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="jsp常用脚本、常用标签、EL表达式、JSTL标签库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javaWeb基础之jsp">
+<meta property="og:url" content="https://couraki.com/2022/02/11/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8Bjsp/index.html">
+<meta property="og:site_name" content="bubble | blog">
+<meta property="og:description" content="jsp常用脚本、常用标签、EL表达式、JSTL标签库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/66ec897edd684186b149d262893a4b14.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/7604b8146c7d459ea5bd0d628f4460db.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_18,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/df5a0a6cf6a740d799e85f6d0896d024.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_13,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/934ac3b1c4b14011900726079086c5d6.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_16,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2f513aea43fd451fb2c3d981d30f81db.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/65524fe14c5a45a7af57930ee8e8af2d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_19,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/baa20337edce4249bcb78e9af0a75b4c.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/efe38282dc9b43618ffcb8efea4d04cc.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_16,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/271df4b894504c36a3ff8c8ef2c910f9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/42986ca80be044d1995e0fa0dc2ea77d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_10,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/13d4be72abed41798ce1eae6adb69ea2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/019c993f7808439a92ac0abbe82b4c13.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3e3d8d70302644c291bfc4b905088fc1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/7fc554cccee84ab8881e2ddb9d20f509.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_9,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d011537a21ce4d63a5f2a1b7f2a89fa7.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_10,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/153f5989615e4a4e9c41f3cfa7d9ffb4.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_19,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/1d88acc3cf7a4d0a92f846a05d4f90ac.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_14,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/8b1b18269cc34f12982b2269dc1023c0.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2022-02-11T06:42:10.000Z">
+<meta property="article:modified_time" content="2022-07-09T06:56:52.142Z">
+<meta property="article:author" content="bubble">
+<meta property="article:tag" content="javaWeb">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+
+<link rel="canonical" href="https://couraki.com/2022/02/11/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8Bjsp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>javaWeb基础之jsp | bubble | blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/mainpropath/" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">bubble | blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description"> </p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://couraki.com/2022/02/11/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8Bjsp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="bubble">
+      <meta itemprop="description" content="五彩斑斓的泡泡">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bubble | blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          javaWeb基础之jsp
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-11 14:42:10" itemprop="dateCreated datePublished" datetime="2022-02-11T14:42:10+08:00">2022-02-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-09 14:56:52" itemprop="dateModified" datetime="2022-07-09T14:56:52+08:00">2022-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javaWeb%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">javaWeb基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>11 分钟</span>
+            </span>
+            <div class="post-description">jsp常用脚本、常用标签、EL表达式、JSTL标签库。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p> <strong>运行环境</strong></p>
+<p>系统：windows</p>
+<p>服务器：Tomcat 8.0.50</p>
+<p>IDEA：2021.3版本</p>
+<h1 id="什么是jsp"><a href="#什么是jsp" class="headerlink" title="什么是jsp?"></a><strong>什么是jsp?</strong></h1><p>jsp的全称是java server pages，java的服务器页面。</p>
+<p>jsp的主要作用是代替Servlet程序回传html页面的数据。</p>
+<h1 id="jsp页面的本质"><a href="#jsp页面的本质" class="headerlink" title="jsp页面的本质"></a><strong>jsp页面的本质</strong></h1><p>jsp页面的本质是一个Servlet程序。</p>
+<p>当我们第一次访问jsp页面时，Tomcat服务器会帮我们把jsp页面翻译成为一个java源文件。并且对它进行编译成源文件。</p>
+<p><strong>jsp程序代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">这是一个jsp页面</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>通过跟踪本地编译路径发现jsp页面被编译成了java文件</p>
+<p><img src="https://img-blog.csdnimg.cn/66ec897edd684186b149d262893a4b14.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>打开java文件，这个类继承了HttpJspBase类，而HttpJspBase类继承了HttpServlet类，所以jsp翻译出来的java类是一个Servlet程序。</p>
+<p><img src="https://img-blog.csdnimg.cn/7604b8146c7d459ea5bd0d628f4460db.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_18,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> 翻译出来的java类通过流的形式输出页面内容。</p>
+<p><img src="https://img-blog.csdnimg.cn/df5a0a6cf6a740d799e85f6d0896d024.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_13,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="jsp头部page指令"><a href="#jsp头部page指令" class="headerlink" title="jsp头部page指令"></a><strong>jsp头部page指令</strong></h1><p><strong>1. language属性：</strong>表示jsp文件翻译后是什么语言文件，暂时只支持java。</p>
+<p>**2. contentType属性:**表示jsp返回的数据类型是什么，源码当中response.setContentType()属性。</p>
+<p><img src="https://img-blog.csdnimg.cn/934ac3b1c4b14011900726079086c5d6.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_16,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>3. pageEncoding属性：</strong> 表示当前jsp页面文件本身的字符集。</p>
+<p><strong>4. import属性：</strong>跟java源代码中一样，用于导包，导类。</p>
+<p><strong>5. autoFlush属性：</strong>设置当out输出流缓冲区满了之后，是否自动刷新缓冲区。默认值是true。</p>
+<p><strong>6. buffer属性：</strong>设置out缓冲区的大小，默认是8KB。</p>
+<p><strong>7. errorPage属性：</strong>设置当jsp页面运行时出错，自动跳转的错误页面路径。</p>
+<p><strong>8. isErrorPage属性：</strong>设置当前jsp页面是否是错误信息提示页面，默认是false。</p>
+<p><strong>9. session属性：</strong>设置访问当前jsp页面，是否会创建HttpSession对象，默认是true。</p>
+<p><strong>10. extends属性：</strong>设置jsp翻译出来的java类默认继承谁。（除非必须。默认不修改）</p>
+<p><img src="https://img-blog.csdnimg.cn/2f513aea43fd451fb2c3d981d30f81db.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="jsp常用脚本"><a href="#jsp常用脚本" class="headerlink" title="jsp常用脚本"></a><strong>jsp常用脚本</strong></h1><h2 id="声明脚本"><a href="#声明脚本" class="headerlink" title="声明脚本"></a><strong>声明脚本</strong></h2><p>作用：可以给jsp翻译出来的java类定义属性、方法、静态代码块、内部类等。</p>
+<p>格式：&lt;%！   内容   %&gt;</p>
+<p><strong>jsp程序代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.util.HashMap&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.util.ArrayList&quot;</span> %&gt;</span><br><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;%!</span><br><span class="line">    <span class="comment">//声明属性</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ArrayList&lt;Integer&gt; arrayList;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明静态代码块</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        arrayList=<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;Integer&gt;();</span><br><span class="line">        arrayList.add(<span class="number">1</span>);</span><br><span class="line">        arrayList.add(<span class="number">2</span>);</span><br><span class="line">        arrayList.add(<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> a + b;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明内部类</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">student</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line">        <span class="keyword">private</span> String number;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>翻译过后的java文件新增内容</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/65524fe14c5a45a7af57930ee8e8af2d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_19,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="表达式脚本"><a href="#表达式脚本" class="headerlink" title="表达式脚本"></a><strong>表达式脚本</strong></h2><p>作用：可以在jsp页面上输出数据。</p>
+<p>格式：&lt;%&#x3D;   内容   %&gt;</p>
+<p><strong>在声明脚本的基础上输出数据</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;%--输出整数--%&gt;</span><br><span class="line">&lt;%=<span class="number">10</span>%&gt;&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;%--输出浮点数--%&gt;</span><br><span class="line">&lt;%=<span class="number">10.1234</span>%&gt;&lt;br/&gt;</span><br><span class="line"></span><br><span class="line">&lt;%--输出字符串--%&gt;</span><br><span class="line">&lt;%=<span class="string">&quot;这是一个字符串&quot;</span>%&gt;&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;%--输出对象--%&gt;</span><br><span class="line">&lt;%=arrayList%&gt;&lt;br&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>页面显示内容</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/baa20337edce4249bcb78e9af0a75b4c.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>我们并没有写页面的代码，却在网页上显示出来了对应的数据。通过查看翻译后的java源文件代码发现，上面所写的代码在源文件的**_jspService方法**当中被翻译成了页面。</p>
+<p><img src="https://img-blog.csdnimg.cn/efe38282dc9b43618ffcb8efea4d04cc.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_16,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="代码脚本"><a href="#代码脚本" class="headerlink" title="代码脚本"></a><strong>代码脚本</strong></h2><p>作用：可以在jsp页面中用java语言编写需要的功能。</p>
+<p>格式：&lt;%   内容   %&gt;</p>
+<p>特点：（1）代码脚本翻译后在_jspService方法中，所以这个方法当中的对象和属性等都可以直接使用。</p>
+<p>​      （2）可以由多个代码脚本块组合完成一个完整的java语句，因为他们都是放在_jspService方法当中。</p>
+<p>​      （3）代码脚本可以和表达式脚本组合使用，在jsp页面上输出数据。</p>
+<p><strong>代码脚本简单样例：求20以内的素数</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">2</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">isPrime</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">2</span>; j &lt;= Math.sqrt(i); j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i % j == <span class="number">0</span>) &#123;</span><br><span class="line">                isPrime = <span class="literal">false</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (isPrime == <span class="literal">true</span>)</span><br><span class="line">            System.out.println(i);</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>查看翻译后的java源代码发现上面写的代码被添加在**_jspService方法<strong>当中，所以我们编写代码脚本相当于是在这个方法当中编写，既然是在这个方法当中编写，那么</strong>这个方法内的参数、对象等我们都可以在代码脚本当中使用。** </p>
+<p><strong>多个代码脚本块组合完成一个完整的java语句样例</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">12</span>; i++) &#123;%&gt;</span><br><span class="line">    &lt;%System.out.println(i);%&gt;</span><br><span class="line">&lt;%&#125;%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> <strong>代码脚本可以和表达式脚本组合使用，在jsp页面上输出数据样例</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;%&gt;</span><br><span class="line">    &lt;%=i%&gt;</span><br><span class="line">&lt;%&#125;%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>页面显示内容</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/271df4b894504c36a3ff8c8ef2c910f9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> <strong>综合运用样例：输出10×10的表格</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;table border=<span class="string">&quot;1&quot;</span>&gt;</span><br><span class="line">    &lt;%<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt;= <span class="number">10</span>; i++) &#123;%&gt;</span><br><span class="line">    &lt;tr&gt;</span><br><span class="line">        &lt;%<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">1</span>; j &lt;= <span class="number">10</span>; j++) &#123;%&gt;</span><br><span class="line">        &lt;td&gt;(&lt;%=i%&gt;,&lt;%=j%&gt;)&lt;/td&gt;</span><br><span class="line">        &lt;%&#125;%&gt;</span><br><span class="line">    &lt;/tr&gt;</span><br><span class="line">    &lt;%&#125;%&gt;</span><br><span class="line">&lt;/table&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>显示效果</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/42986ca80be044d1995e0fa0dc2ea77d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_10,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> <strong>输出10组学生信息</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;%--css样式--%&gt;</span><br><span class="line">&lt;%--table &#123;--%&gt;</span><br><span class="line">&lt;%--border: 1px red solid;--%&gt;</span><br><span class="line">&lt;%--width: 600px;--%&gt;</span><br><span class="line">&lt;%--border-collapse: collapse;--%&gt;</span><br><span class="line">&lt;%--&#125;--%&gt;</span><br><span class="line">&lt;%</span><br><span class="line">    List&lt;Student&gt; students = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        students.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;name&quot;</span> + i, i, i + <span class="number">18</span>, <span class="string">&quot;000&quot;</span> + i));</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line">&lt;table&gt;</span><br><span class="line">    &lt;tr&gt;</span><br><span class="line">        &lt;td&gt;姓名&lt;/td&gt;</span><br><span class="line">        &lt;td&gt;年龄&lt;/td&gt;</span><br><span class="line">        &lt;td&gt;编号&lt;/td&gt;</span><br><span class="line">        &lt;td&gt;电话号码&lt;/td&gt;</span><br><span class="line">        &lt;td&gt;操作&lt;/td&gt;</span><br><span class="line">    &lt;/tr&gt;</span><br><span class="line">    &lt;% <span class="keyword">for</span> (Student student : students) &#123;%&gt;</span><br><span class="line">    &lt;tr&gt;</span><br><span class="line">        &lt;td&gt;&lt;%=student.getName()%&gt;</span><br><span class="line">        &lt;/td&gt;</span><br><span class="line">        &lt;td&gt;&lt;%=student.getAge()%&gt;</span><br><span class="line">        &lt;/td&gt;</span><br><span class="line">        &lt;td&gt;&lt;%=student.getId()%&gt;</span><br><span class="line">        &lt;/td&gt;</span><br><span class="line">        &lt;td&gt;&lt;%=student.getPhone()%&gt;</span><br><span class="line">        &lt;/td&gt;</span><br><span class="line">        &lt;td&gt;删除、修改&lt;/td&gt;</span><br><span class="line">    &lt;/tr&gt;</span><br><span class="line">    &lt;%&#125;%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>显示效果</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/13d4be72abed41798ce1eae6adb69ea2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>代码脚本的使用非常的灵活，通过对代码脚本和表达式脚本的灵活使用，可以实现很多功能。</p>
+<h1 id="jsp的常用标签"><a href="#jsp的常用标签" class="headerlink" title="jsp的常用标签"></a><strong>jsp的常用标签</strong></h1><h2 id="静态包含"><a href="#静态包含" class="headerlink" title="静态包含"></a><strong>静态包含</strong></h2><p>特点：（1）静态包含不会翻译被包含的jsp页面。</p>
+<p>​      （2）静态包含是将被包含的jsp页面代码拷贝到包含的位置执行输出。</p>
+<p>当很多网页都具有相同的内容时，如果我们要修改这一部分内容，那么修改起来就显得很麻烦。如果将这一部分内容写成jsp页面代码，然后包含到不同的网页当中。我们只需要修改这一部分对应的jsp页面代码就可以对所有使用这一部分内容的页面进行修改。</p>
+<p><strong>简单样例</strong></p>
+<p><strong>主页代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">用户名：&lt;input type=<span class="string">&quot;text&quot;</span>&gt;</span><br><span class="line">密码：&lt;input type=<span class="string">&quot;password&quot;</span>&gt;&lt;br&gt;</span><br><span class="line">&lt;%--file属性指定包含的jsp页面的路径--%&gt;</span><br><span class="line">&lt;%@ include file=<span class="string">&quot;/footer.jsp&quot;</span> %&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>包含页面代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">合作伙伴：A公司、B公司、C公司</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>页面显示内容</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/019c993f7808439a92ac0abbe82b4c13.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_11,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="动态包含"><a href="#动态包含" class="headerlink" title="动态包含"></a><strong>动态包含</strong></h2><p>特点：（1）动态包含会将包含的jsp页面翻译成java代码。</p>
+<p>​      （2）动态包含是通过代码org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, “footer.jsp”, out, false)来调用被包含的jsp页面执行输出。</p>
+<p>​      （3）动态包含可以传递参数。</p>
+<p><strong>样例主页代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">用户名：&lt;input type=<span class="string">&quot;text&quot;</span>&gt;</span><br><span class="line">密码：&lt;input type=<span class="string">&quot;password&quot;</span>&gt;&lt;br&gt;</span><br><span class="line">&lt;jsp:include page=<span class="string">&quot;footer.jsp&quot;</span>&gt;</span><br><span class="line">    &lt;jsp:param name=<span class="string">&quot;username&quot;</span> value=<span class="string">&quot;root&quot;</span>/&gt;&lt;!--传递参数--&gt;</span><br><span class="line">    &lt;jsp:param name=<span class="string">&quot;password&quot;</span> value=<span class="string">&quot;654321&quot;</span>/&gt;</span><br><span class="line">&lt;/jsp:include&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>被包含的页面代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="string">&quot;java&quot;</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">合作伙伴：A公司、B公司、C公司&lt;br&gt;</span><br><span class="line">用户名=&lt;%=request.getParameter(<span class="string">&quot;username&quot;</span>)%&gt;&lt;!--获取参数--&gt;</span><br><span class="line">密码=&lt;%=request.getParameter(<span class="string">&quot;password&quot;</span>)%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>页面显示内容</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/3e3d8d70302644c291bfc4b905088fc1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="请求转发"><a href="#请求转发" class="headerlink" title="请求转发"></a><strong>请求转发</strong></h2><p>因为jsp本质上是一个Servlet程序，所以依然可以使用Servlet的请求转发方式。</p>
+<p><strong>Servlet程序请求转发写法</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    request.getRequestDispatcher(<span class="string">&quot;/dtbh.jsp&quot;</span>).forward(request,response);</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>jsp请求转发写法</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:forward page=<span class="string">&quot;dtbh.jsp&quot;</span>&gt;&lt;/jsp:forward&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>实际使用方式</strong></p>
+<p>实际情况下在Servlet程序当中查找到了对应的数据，通过jsp页面显示出来。所以之前的示例输出10组学生信息应当这么写。</p>
+<p><strong>Servlet程序代码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        <span class="comment">//获取请求的参数</span></span><br><span class="line">        <span class="comment">//发送sql语句查询学生的信息,使用循环代替</span></span><br><span class="line">        System.out.println(<span class="string">&quot;DoGet&quot;</span>);</span><br><span class="line">        List&lt;Student&gt; students = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            students.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;name&quot;</span> + i, i, i + <span class="number">18</span>, <span class="string">&quot;000&quot;</span> + i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//保存查询到的结果到request域中</span></span><br><span class="line">        req.setAttribute(<span class="string">&quot;students&quot;</span>, students);</span><br><span class="line">        <span class="comment">//请求转发到showStudent.jsp当中</span></span><br><span class="line">        req.getRequestDispatcher(<span class="string">&quot;showStudent.jsp&quot;</span>).forward(req, resp);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>jsp程序代码中代码脚本修改为直接获取信息即可</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    List&lt;Student&gt; students = (List&lt;Student&gt;) request.getAttribute(<span class="string">&quot;students&quot;</span>);</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="EL表达式"><a href="#EL表达式" class="headerlink" title="EL表达式"></a><strong>EL表达式</strong></h1><p>EL表达式的全称是：Ecpression Language。是表达式语言。</p>
+<p>EL表达式的作用：EL表达式主要用来代替jsp页面的表达式脚本在jsp页面中进行数据的输出，EL表达式在输出数据的时候，要比jsp的表达式脚本要简洁。</p>
+<p><strong>EL表达式输出和表达式脚本输出代码对比</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    request.setAttribute(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;值&quot;</span>);</span><br><span class="line">%&gt;</span><br><span class="line">表达式脚本输出key的值：&lt;%= request.getAttribute(<span class="string">&quot;key1&quot;</span>)%&gt;&lt;br/&gt;</span><br><span class="line">EL表达式输出key的值：$&#123;key1&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>可以发现EL表达式代码简洁明了得多。</p>
+<h2 id="使用EL表达式输出复杂的Bean对象"><a href="#使用EL表达式输出复杂的Bean对象" class="headerlink" title="使用EL表达式输出复杂的Bean对象"></a><strong>使用EL表达式输出复杂的Bean对象</strong></h2><p><strong>创建一个Person类自动生成get和set方法，有如下属性</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/7fc554cccee84ab8881e2ddb9d20f509.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_9,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> <strong>代码脚本内容</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    <span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">    person.setName(<span class="string">&quot;小红&quot;</span>);</span><br><span class="line">    person.setPhones(<span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;11111&quot;</span>, <span class="string">&quot;22222&quot;</span>, <span class="string">&quot;33333&quot;</span>&#125;);</span><br><span class="line">    List&lt;String&gt; list = Arrays.asList(<span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;重庆&quot;</span>, <span class="string">&quot;西藏&quot;</span>, <span class="string">&quot;北京&quot;</span>&#125;);</span><br><span class="line">    person.setCities(list);</span><br><span class="line">    Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    map.put(<span class="string">&quot;key1&quot;</span>, <span class="string">&quot;value1&quot;</span>);</span><br><span class="line">    map.put(<span class="string">&quot;key2&quot;</span>, <span class="string">&quot;value2&quot;</span>);</span><br><span class="line">    map.put(<span class="string">&quot;key3&quot;</span>, <span class="string">&quot;value3&quot;</span>);</span><br><span class="line">    person.setMap(map);</span><br><span class="line">    pageContext.setAttribute(<span class="string">&quot;person&quot;</span>, person);</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>EL表达式代码</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">姓名：$&#123;person.name&#125;&lt;br/&gt;</span><br><span class="line">第二个电话：$&#123;person.phones[<span class="number">1</span>]&#125;&lt;br/&gt;</span><br><span class="line">城市：$&#123;person.cities&#125;&lt;br/&gt;</span><br><span class="line">第二个城市：$&#123;person.cities[<span class="number">1</span>]&#125;&lt;br/&gt;</span><br><span class="line">Map:$&#123;person.map&#125;&lt;br/&gt;</span><br><span class="line">key2的值：$&#123;person.map.key2&#125;&lt;br/&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>显示结果</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/d011537a21ce4d63a5f2a1b7f2a89fa7.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_10,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>EL表达式中的运算和java中的运算大同小异，同样也支持三元运算符。</strong></p>
+<h2 id="EL-表达式的-11-个隐含对象"><a href="#EL-表达式的-11-个隐含对象" class="headerlink" title="EL 表达式的 11 个隐含对象"></a><strong>EL 表达式的 11 个隐含对象</strong></h2><p>EL表达式中的11个隐含对象，是 EL 表达式中自己定义的，可以直接使用。</p>
+<p><img src="https://img-blog.csdnimg.cn/153f5989615e4a4e9c41f3cfa7d9ffb4.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_19,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p> 如果有多个域当中有相同的key值，那么我们要获取特定域中的key对应的value，应当指定是从哪个域中获取，如下所示：</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    pageContext.setAttribute(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;pageContext&quot;</span>);</span><br><span class="line">    request.setAttribute(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;request&quot;</span>);</span><br><span class="line">    session.setAttribute(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;session&quot;</span>);</span><br><span class="line">    application.setAttribute(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;application&quot;</span>);</span><br><span class="line">%&gt;</span><br><span class="line">$&#123;requestScope.key&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="JSTL标签库"><a href="#JSTL标签库" class="headerlink" title="JSTL标签库"></a><strong>JSTL标签库</strong></h1><p>JSTL标签库全称是JSP standard Tag Library。是一个不断完善的开源的JSP标签库。</p>
+<p>JSTL标签库主要用于替代代码脚本，使得整个jsp页面变得更加简洁。</p>
+<p><strong>使用标签库之前要导入jar包。</strong></p>
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://img-blog.csdnimg.cn/1d88acc3cf7a4d0a92f846a05d4f90ac.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_14,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></h2><h2 id="core核心库的使用"><a href="#core核心库的使用" class="headerlink" title="core核心库的使用"></a><strong>core核心库的使用</strong></h2><p> <strong>&lt;c:set &#x2F;&gt;标签：往域中保存数据</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%--scope设置保存到哪个域--%&gt;</span><br><span class="line">&lt;c:set scope=<span class="string">&quot;request&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;key1&quot;</span> value=<span class="string">&quot;value1&quot;</span>/&gt;</span><br><span class="line">$&#123;requestScope.key1&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>&lt;c:if &#x2F;&gt;标签：用作if条件判断</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;c:<span class="keyword">if</span> test=<span class="string">&quot;$&#123;12==12&#125;&quot;</span>&gt;</span><br><span class="line">    <span class="literal">true</span>        &lt;%--条件为真时的逻辑--%&gt;</span><br><span class="line">&lt;/c:<span class="keyword">if</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>&lt;c:choose&gt;&lt;c:when&gt;&lt;c:otherwise&gt;标签：用作多路判断，类似于swich…case…default</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;%request.setAttribute(<span class="string">&quot;number&quot;</span>, <span class="number">200</span>);%&gt;</span><br><span class="line"></span><br><span class="line">&lt;c:choose&gt;</span><br><span class="line">    &lt;c:when test=<span class="string">&quot;$&#123;requestScope.number&gt;190&#125;&quot;</span>&gt;</span><br><span class="line">        &lt;h1&gt;大于<span class="number">190</span>&lt;/h1&gt;</span><br><span class="line">    &lt;/c:when&gt;</span><br><span class="line">    &lt;c:when test=<span class="string">&quot;$&#123;requestScope.number&gt;180&#125;&quot;</span>&gt;</span><br><span class="line">        &lt;h1&gt;大于<span class="number">180</span>&lt;/h1&gt;</span><br><span class="line">    &lt;/c:when&gt;</span><br><span class="line">    &lt;c:when test=<span class="string">&quot;$&#123;requestScope.number&gt;170&#125;&quot;</span>&gt;</span><br><span class="line">        &lt;h1&gt;大于<span class="number">170</span>&lt;/h1&gt;</span><br><span class="line">    &lt;/c:when&gt;</span><br><span class="line">    &lt;c:otherwise&gt;</span><br><span class="line">        &lt;h1&gt;小于等于<span class="number">170</span>&lt;/h1&gt;</span><br><span class="line">    &lt;/c:otherwise&gt;</span><br><span class="line">&lt;/c:choose&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>&lt;c:forEach &#x2F; &gt;标签：用作遍历输出</strong></p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">&lt;%--用forEach标签打印九九乘法表--%&gt;</span><br><span class="line">&lt;table border=<span class="string">&quot;1&quot;</span>&gt;</span><br><span class="line">    &lt;c:forEach begin=<span class="string">&quot;1&quot;</span> end=<span class="string">&quot;9&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;i&quot;</span>&gt;</span><br><span class="line">        &lt;tr&gt;</span><br><span class="line">            &lt;c:forEach begin=<span class="string">&quot;1&quot;</span> end=<span class="string">&quot;$&#123;i&#125;&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;j&quot;</span>&gt;</span><br><span class="line">                &lt;td&gt;&lt;c:out value=<span class="string">&quot;$&#123;j &#125;*$&#123;i &#125;=$&#123;j*i &#125;&quot;</span>&gt;&lt;/c:out&gt;&lt;/td&gt;</span><br><span class="line">            &lt;/c:forEach&gt;</span><br><span class="line">        &lt;/tr&gt;</span><br><span class="line">    &lt;/c:forEach&gt;</span><br><span class="line">&lt;/table&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;%--用forEach标签遍历字符串数组--%&gt;</span><br><span class="line">&lt;%request.setAttribute(<span class="string">&quot;arr&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;11111&quot;</span>, <span class="string">&quot;22222&quot;</span>, <span class="string">&quot;33333&quot;</span>&#125;);%&gt;</span><br><span class="line">&lt;c:forEach items=<span class="string">&quot;$&#123;requestScope.arr&#125;&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;item&quot;</span>&gt;</span><br><span class="line">    $&#123;item&#125;</span><br><span class="line">&lt;/c:forEach&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;%--用forEach标签遍历Map--%&gt;</span><br><span class="line">&lt;%</span><br><span class="line">    Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    map.put(<span class="string">&quot;key1&quot;</span>, <span class="string">&quot;value1&quot;</span>);</span><br><span class="line">    map.put(<span class="string">&quot;key2&quot;</span>, <span class="string">&quot;value2&quot;</span>);</span><br><span class="line">    map.put(<span class="string">&quot;key3&quot;</span>, <span class="string">&quot;value3&quot;</span>);</span><br><span class="line">    request.setAttribute(<span class="string">&quot;map&quot;</span>, map);</span><br><span class="line"><span class="comment">//    原生java遍历方式</span></span><br><span class="line"><span class="comment">//    for (Map.Entry&lt;String, Object&gt; entry : map.entrySet()) &#123;</span></span><br><span class="line"><span class="comment">//        System.out.println(entry.getKey() + &quot;  &quot; + entry.getValue());</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line">%&gt;</span><br><span class="line">&lt;c:forEach items=<span class="string">&quot;$&#123;requestScope.map&#125;&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;entry&quot;</span>&gt;</span><br><span class="line">    $&#123;entry&#125;&lt;br/&gt;</span><br><span class="line">&lt;/c:forEach&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;%--用forEach标签遍历List集合--%&gt;</span><br><span class="line">&lt;%</span><br><span class="line">    List&lt;Student&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        list.add(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;name&quot;</span> + i, <span class="number">12</span> + i, <span class="string">&quot;location&quot;</span> + i, <span class="string">&quot;phone&quot;</span> + i, <span class="number">2022</span> + i));</span><br><span class="line">    &#125;</span><br><span class="line">    request.setAttribute(<span class="string">&quot;students&quot;</span>, list);</span><br><span class="line">%&gt;</span><br><span class="line">&lt;table border=<span class="string">&quot;1&quot;</span>&gt;</span><br><span class="line">    &lt;tr&gt;</span><br><span class="line">        &lt;th&gt;姓名&lt;/th&gt;</span><br><span class="line">        &lt;th&gt;年龄&lt;/th&gt;</span><br><span class="line">        &lt;th&gt;地址&lt;/th&gt;</span><br><span class="line">        &lt;th&gt;电话&lt;/th&gt;</span><br><span class="line">        &lt;th&gt;编号&lt;/th&gt;</span><br><span class="line">    &lt;/tr&gt;</span><br><span class="line">    &lt;%--</span><br><span class="line">    begin   表示开始的下标,默认开头</span><br><span class="line">    end     表示结束的下标，默认结尾</span><br><span class="line">    step    表示步长，默认为<span class="number">1</span></span><br><span class="line">    items   表示遍历的集合</span><br><span class="line">    <span class="keyword">var</span>     表示当前遍历到的数据</span><br><span class="line">    --%&gt;</span><br><span class="line">    &lt;c:forEach begin=<span class="string">&quot;2&quot;</span> end=<span class="string">&quot;7&quot;</span> step=<span class="string">&quot;2&quot;</span> items=<span class="string">&quot;$&#123;requestScope.students&#125;&quot;</span> <span class="keyword">var</span>=<span class="string">&quot;student&quot;</span>&gt;</span><br><span class="line">        &lt;tr&gt;</span><br><span class="line">            &lt;th&gt;$&#123;student.name&#125;&lt;/th&gt;</span><br><span class="line">            &lt;th&gt;$&#123;student.age&#125;&lt;/th&gt;</span><br><span class="line">            &lt;th&gt;$&#123;student.location&#125;&lt;/th&gt;</span><br><span class="line">            &lt;th&gt;$&#123;student.phone&#125;&lt;/th&gt;</span><br><span class="line">            &lt;th&gt;$&#123;student.id&#125;&lt;/th&gt;</span><br><span class="line">        &lt;/tr&gt;</span><br><span class="line">    &lt;/c:forEach&gt;</span><br><span class="line">&lt;/table&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>显示效果</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/8b1b18269cc34f12982b2269dc1023c0.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA55-l6YGT5LuA5LmI5piv56CB5oCq5ZCX77yf,size_12,color_FFFFFF,t_70,g_se,x_16" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>bubble
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://couraki.com/2022/02/11/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8Bjsp/" title="javaWeb基础之jsp">https://couraki.com/2022/02/11/javaWeb基础之jsp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javaWeb/" rel="tag"># javaWeb</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/06/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8BServlet/" rel="prev" title="javaWeb基础之Servlet">
+      <i class="fa fa-chevron-left"></i> javaWeb基础之Servlet
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/12/javaWeb%E5%9F%BA%E7%A1%80%E4%B9%8B%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%92%8C%E4%B8%8B%E8%BD%BD/" rel="next" title="javaWeb基础之文件上传和下载">
+      javaWeb基础之文件上传和下载 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81Njc4MS8zMzI0NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFjsp"><span class="nav-number">1.</span> <span class="nav-text">什么是jsp?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsp%E9%A1%B5%E9%9D%A2%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-number">2.</span> <span class="nav-text">jsp页面的本质</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsp%E5%A4%B4%E9%83%A8page%E6%8C%87%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">jsp头部page指令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsp%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC"><span class="nav-number">4.</span> <span class="nav-text">jsp常用脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E8%84%9A%E6%9C%AC"><span class="nav-number">4.1.</span> <span class="nav-text">声明脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%84%9A%E6%9C%AC"><span class="nav-number">4.2.</span> <span class="nav-text">表达式脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%84%9A%E6%9C%AC"><span class="nav-number">4.3.</span> <span class="nav-text">代码脚本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsp%E7%9A%84%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE"><span class="nav-number">5.</span> <span class="nav-text">jsp的常用标签</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%8C%85%E5%90%AB"><span class="nav-number">5.1.</span> <span class="nav-text">静态包含</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">5.2.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%8C%85%E5%90%AB"><span class="nav-number">5.3.</span> <span class="nav-text">动态包含</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91"><span class="nav-number">5.4.</span> <span class="nav-text">请求转发</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EL%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">EL表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8EL%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BE%93%E5%87%BA%E5%A4%8D%E6%9D%82%E7%9A%84Bean%E5%AF%B9%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">使用EL表达式输出复杂的Bean对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EL-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84-11-%E4%B8%AA%E9%9A%90%E5%90%AB%E5%AF%B9%E8%B1%A1"><span class="nav-number">6.2.</span> <span class="nav-text">EL 表达式的 11 个隐含对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JSTL%E6%A0%87%E7%AD%BE%E5%BA%93"><span class="nav-number">7.</span> <span class="nav-text">JSTL标签库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#-1"><span class="nav-number">7.1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core%E6%A0%B8%E5%BF%83%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">7.2.</span> <span class="nav-text">core核心库的使用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bubble"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">bubble</p>
+  <div class="site-description" itemprop="description">五彩斑斓的泡泡</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mainpropath" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mainpropath" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/xxxxxxxxxx@qq.com" title="E-Mail → xxxxxxxxxx@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      链接网址
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/weixin_41746479?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_41746479?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; Tue Aug 18 2020 08:00:00 GMT+0800 (中国标准时间) – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bubble</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">202k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:04</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
