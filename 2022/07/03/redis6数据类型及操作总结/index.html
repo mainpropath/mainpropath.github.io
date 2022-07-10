@@ -14,12 +14,12 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
-  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
   <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="key操作、字符串、列表、集合、哈希、有序集合、位图、HypeLogLog、地理空间。">
@@ -107,7 +107,7 @@
 <meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
 <meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
 <meta property="article:published_time" content="2022-07-03T07:37:53.000Z">
-<meta property="article:modified_time" content="2022-07-09T07:42:34.155Z">
+<meta property="article:modified_time" content="2022-07-10T05:57:26.063Z">
 <meta property="article:author" content="bubble">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
@@ -306,7 +306,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-09 15:42:34" itemprop="dateModified" datetime="2022-07-09T15:42:34+08:00">2022-07-09</time>
+                <time title="修改时间：2022-07-10 13:57:26" itemprop="dateModified" datetime="2022-07-10T13:57:26+08:00">2022-07-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -640,7 +640,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitop and/or/not/xor &lt;destkey&gt; &lt;key1&gt; &lt;key2&gt; &lt;key3&gt;</span><br></pre></td></tr></table></figure>
 
 <p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
-<h1 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a><strong>HyperLogLog</strong></h1><p>​    在 Redis 中每个键占用的内容都是 12K，理论存储近似接近 2^64 个值，这是一个基于基数估计的算法，只能比较准确的估算出基数，可以使用少量固定的内存去存储并识别集合中的唯一元素。但是这个估算的基数并不一定准确，是一个带有 0.81% 标准错误的近似值。</p>
+<h1 id="基数统计（HyperLogLog）"><a href="#基数统计（HyperLogLog）" class="headerlink" title="基数统计（HyperLogLog）"></a><strong>基数统计（HyperLogLog）</strong></h1><p>​    在 Redis 中每个键占用的内容都是 12K，理论存储近似接近 2^64 个值，这是一个基于基数估计的算法，只能比较准确的估算出基数，可以使用少量固定的内存去存储并识别集合中的唯一元素。但是这个估算的基数并不一定准确，是一个带有 0.81% 标准错误的近似值。</p>
 <p><strong>任意数量的元素添加到指定的 *HyperLogLog* 里面</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pfadd &lt;key&gt; &lt;element1&gt; &lt;element2&gt;</span><br></pre></td></tr></table></figure>
 
@@ -781,7 +781,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#key%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">key操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88String%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">字符串（String）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%EF%BC%88List%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">列表（List）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E5%90%88%EF%BC%88Set%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">集合（Set）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%EF%BC%88Hash%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">哈希（Hash）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%EF%BC%88Zset%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">有序集合（Zset）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%8D%E5%9B%BE%EF%BC%88bitmap%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">位图（bitmap）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">8.</span> <span class="nav-text">HyperLogLog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%B0%E7%90%86%E7%A9%BA%E9%97%B4%EF%BC%88geospatial%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">地理空间（geospatial）</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#key%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">key操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88String%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">字符串（String）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%EF%BC%88List%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">列表（List）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E5%90%88%EF%BC%88Set%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">集合（Set）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%EF%BC%88Hash%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">哈希（Hash）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%EF%BC%88Zset%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">有序集合（Zset）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%8D%E5%9B%BE%EF%BC%88bitmap%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">位图（bitmap）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1%EF%BC%88HyperLogLog%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">基数统计（HyperLogLog）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%B0%E7%90%86%E7%A9%BA%E9%97%B4%EF%BC%88geospatial%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">地理空间（geospatial）</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -840,10 +840,10 @@
   </div>
 
       </div>
+  </div>
+ <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=110 src="//music.163.com/outchain/player?type=0&id=3080165816&auto=0&height=90"></iframe>
+ <div id="sidebar-dimmer"></div>
 
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
 
 
       </div>
@@ -887,11 +887,18 @@
       </div>
     </footer>
   </div>
-
+<!--使用 Gitter 实现一个 IM 即时通讯聊天室功能-->
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'Blogcouraki/community'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
   
   
   <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
   <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -904,6 +911,65 @@
 
 
 <script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
 
 
   <script defer src="/lib/three/three.min.js"></script>
@@ -921,6 +987,18 @@
 
 
 
+  <script>
+    (function(d, w, c) {
+      w.ChatraID = 'jemail123321@163.com';
+      var s = d.createElement('script');
+      w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+      };
+      s.async = true;
+      s.src = 'https://call.chatra.io/chatra.js';
+      if (d.head) d.head.appendChild(s);
+    })(document, window, 'Chatra');
+  </script>
 
 
 
@@ -930,6 +1008,7 @@
 
 
 
+    <div id="pjax">
   
 
   
@@ -950,6 +1029,7 @@ NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
 });
 </script>
 
+    </div>
   
   <style>
     .copy-btn {
