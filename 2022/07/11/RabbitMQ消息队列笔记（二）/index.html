@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/7017c5c8482e4ac5a0df5045ba6aa4a9.png">
 <meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
 <meta property="article:published_time" content="2022-07-11T13:26:48.000Z">
-<meta property="article:modified_time" content="2022-07-11T13:48:08.184Z">
+<meta property="article:modified_time" content="2022-07-11T15:23:38.368Z">
 <meta property="article:author" content="bubble">
 <meta property="article:tag" content="RabbitMQ">
 <meta name="twitter:card" content="summary">
@@ -146,7 +146,7 @@
   </style>
 </noscript>
 
-</head>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -289,7 +289,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-11 21:26:48 / 修改时间：21:48:08" itemprop="dateCreated datePublished" datetime="2022-07-11T21:26:48+08:00">2022-07-11</time>
+              <time title="创建时间：2022-07-11 21:26:48 / 修改时间：23:23:38" itemprop="dateCreated datePublished" datetime="2022-07-11T21:26:48+08:00">2022-07-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -325,11 +325,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="交换机"><a href="#交换机" class="headerlink" title="交换机"></a><strong>交换机</strong></h1><p>RabbitMQ消息传递模型的核心思想是：**<code>生产者生产的消息从不会直接发送到队列</code>。生产者只能将消息发送到交换机(exchange)。**</p>
+        <h1 id="交换机"><a href="#交换机" class="headerlink" title="交换机"></a><strong>交换机</strong></h1><p>RabbitMQ消息传递模型的核心思想是：<strong>生产者生产的消息从不会直接发送到队列。生产者只能将消息发送到交换机(exchange)。</strong></p>
 <p>交换机工作的内容非常简单，一方面它接收来自生产者的消息，另一方面将它们推入队列。交换机必须确切知道如何处理收到的消息，这由交换机的类型来决定。</p>
 <p><strong>交换机的类型：直接（direct）、主题（topic）、标题（headers）、扇出（fanout）</strong></p>
 <p>第一个参数表示交换机的名称，空串表示使用默认交换机。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channel.basiPublish(<span class="string">&quot;&quot;</span>,<span class="string">&quot;hello&quot;</span>,<span class="literal">null</span>,message.getBytes())；</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channel.basiPublish(<span class="string">&quot;&quot;</span>,<span class="string">&quot;hello&quot;</span>,<span class="literal">null</span>,message.getBytes());</span><br></pre></td></tr></table></figure>
 
 <p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
 <p><strong>绑定</strong>：交换机和信道之间的桥梁，让交换机知道和哪个队列进行了绑定，可通过绑定选择性的发送消息。</p>
@@ -849,6 +849,26 @@ window.addEventListener('pjax:success', () => {
   
 
   
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '100px',
+  right: 'unset',
+  left: '22px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
 
 <script>
 NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
