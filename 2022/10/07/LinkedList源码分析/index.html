@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"couraki.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="LinkedList源码详解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LinkedList源码分析">
+<meta property="og:url" content="https://couraki.com/2022/10/07/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="bubble | blog">
+<meta property="og:description" content="LinkedList源码详解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/8b307b97d3414e009862ffc6aeeb46a8.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/e1fc0a1e7529409d8a99e58c64a8a25b.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/93c36c871e874b6a9ecc4ad15dc8430d.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ee0bf39570a14917881396767dc798b4.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/95697ab0ddb648b88f667050f5e318a7.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/60562471276443dbbce4b4c332f3a1de.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/023a98ffd2b342fa843567ab74ef24e9.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/a457315d97964d038ad903eb8be7ee29.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/5c1a15a7abf442c6837ae2de74aa9e48.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/80fa39e7b0ce48239c0271a1bddfc85f.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/96df1436c6f547698e1349a441c4a250.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/addd8b1f71c04c7ea8a749b1d6d24c4d.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2e19e894362947809f723f7bf18f4858.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/a86f0f769ac64e82a26f1a9bc099b0d1.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/db3fe219abdd4378a1ee7a8d340dddeb.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/dcb86ee185864619a602a6754df97cc1.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/cdb14b865b494a18993dd8f148a6a6f3.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d6a69b2b07a6417eb842467d7f4ee605.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/15fea8ec8fde493899f82a20b9f6e55a.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/971f49302c1045ab988abe39ad355d9d.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/073802a229f4415383772d2124208924.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/22d276f63bc74bcfb4f642f991eb563a.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/dec1a2b9face45e29ae652e484f37af1.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/c8197c2df7bf4533b4fd2199709bb453.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/19cb4a5fef3a475d81d2cbb7fcc2ffbc.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/40717c680a6647dab70192c007e84700.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/1386c3d38b4b4dcc8904ef51c449eae7.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/42506bdbc3fc4efb85f950851256af30.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/de08ddf3576648279618f82994784720.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/b8329b64ba3e4dcaa6df64e283d58e93.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/9c1aed8415ac4c24ba380c6eb6410748.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0b6293b9727441df8edc57e8ccdc6af8.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2022-10-07T05:48:15.000Z">
+<meta property="article:modified_time" content="2022-10-07T12:07:52.137Z">
+<meta property="article:author" content="bubble">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/8b307b97d3414e009862ffc6aeeb46a8.png">
+
+<link rel="canonical" href="https://couraki.com/2022/10/07/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LinkedList源码分析 | bubble | blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/mainpropath/" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">bubble | blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description"> </p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://couraki.com/2022/10/07/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="bubble">
+      <meta itemprop="description" content="五彩斑斓的泡泡">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bubble | blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LinkedList源码分析
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-07 13:48:15 / 修改时间：20:07:52" itemprop="dateCreated datePublished" datetime="2022-10-07T13:48:15+08:00">2022-10-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">LinkedList源码详解。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="LinkedList简介"><a href="#LinkedList简介" class="headerlink" title="LinkedList简介"></a><strong>LinkedList简介</strong></h1><p><img src="https://img-blog.csdnimg.cn/8b307b97d3414e009862ffc6aeeb46a8.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/e1fc0a1e7529409d8a99e58c64a8a25b.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>LinkedList 底层基于双向链表实现</strong>，所以其<strong>插入和删除的效率高</strong>，但也正因为使用链表实现，所以其<strong>查找元素的效率比较低</strong>。又因为链表在内存中存放的地址是不连续的，所以其<strong>遍历效率没有ArrayList 高</strong>。当我们<strong>需要频繁的插入和删除元素，而较少查询元素时，可以考虑使用 LinkedList</strong> 。<strong>如果你对链表的操作很熟练的话，那么你将会很容易的理解 LinkedList 的实现原理。</strong></p>
+<p><strong>LinkedList 还实现了 Deque 接口，所以可当作栈或队列来使用。</strong></p>
+<h1 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><strong>成员变量</strong></h1><p><strong>作用：</strong>list中数据的个数。</p>
+<p><img src="https://img-blog.csdnimg.cn/93c36c871e874b6a9ecc4ad15dc8430d.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>作用：</strong>双向链表的头结点。</p>
+<p><img src="https://img-blog.csdnimg.cn/ee0bf39570a14917881396767dc798b4.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>作用：</strong>双向链表的尾节点。</p>
+<p><img src="https://img-blog.csdnimg.cn/95697ab0ddb648b88f667050f5e318a7.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>作用：作用：</strong>记录对 List 操作的次数，<strong>主要使用是在 Iterator，是防止在迭代的过程中集合被修改</strong>。该变量定义在AbstractList中，被ArrayList继承。思考一下，<strong>如果我们在遍历集合时，对集合进行了修改，比如说删除了某一个元素，那么很容易导致结果出错或者下标越界。</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/60562471276443dbbce4b4c332f3a1de.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="内部节点类"><a href="#内部节点类" class="headerlink" title="内部节点类"></a><strong>内部节点类</strong></h1><p>LinkedList 内部使用泛型设计了一个节点类，其存放了当前数据、前一个节点和后一个节点的信息。</p>
+<p><img src="https://img-blog.csdnimg.cn/023a98ffd2b342fa843567ab74ef24e9.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a><strong>构造函数</strong></h1><p>LinkedList 有两个构造函数，其中一个为空构造，另一个则可传入集合。可以发现，<strong>传入集合的构造方法其实是先调用空构造，然后使用 addAll 方法将集合的数据添加进链表中。</strong>对于 addAll 方法的分析，接下来会讲到。</p>
+<p><img src="https://img-blog.csdnimg.cn/a457315d97964d038ad903eb8be7ee29.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="增加元素"><a href="#增加元素" class="headerlink" title="增加元素"></a><strong>增加元素</strong></h1><p>LinkedList 较为常用的添加元素的方法如下，接下来我们将一一讲解。</p>
+<p><img src="https://img-blog.csdnimg.cn/5c1a15a7abf442c6837ae2de74aa9e48.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="add-E-e-方法"><a href="#add-E-e-方法" class="headerlink" title="add(E e) 方法"></a><strong>add(E e) 方法</strong></h2><p>add 方法调用了 linkLast 方法，该方法是将元素添加到双向链表的尾部。</p>
+<p><img src="https://img-blog.csdnimg.cn/80fa39e7b0ce48239c0271a1bddfc85f.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>linkLast 方法其实很简单，就是将数据插入到链表的尾部</strong>（先获取尾部节点 last，然后创建一个节点类存放新的数据，将其前一个节点设置为 last，由于该节点是放置在尾部，所以后一个节点直接设置为 null 即可。然后将 last 指向新创建的节点，这样就插入了一个节点）<strong>。值得注意的是，如果这是第一个插入的元素，即 l &#x3D; last &#x3D; null，那么这个节点既是尾节点，也是头节点。</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/96df1436c6f547698e1349a441c4a250.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="add-int-index-E-element-方法"><a href="#add-int-index-E-element-方法" class="headerlink" title="add(int index, E element) 方法"></a><strong>add(int index, E element) 方法</strong></h2><p>该方法<strong>首先检查数组插入位置是否越界</strong>，若越界则抛出异常。接下来的工作就很简单了，<strong>判断插入的位置是否是尾部，如果是尾部直接调用 linkLast 方法，若不是则调用 linkBefore 方法。</strong>而 linkLast 方法已经在上文分析过了。 <strong>值得注意的是，对于插入位置是头结点的情况，LinkBefore 方法中进行了判断。</strong></p>
+<p> <img src="https://img-blog.csdnimg.cn/addd8b1f71c04c7ea8a749b1d6d24c4d.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>这里我们<strong>先来看 node(index) 方法，该方法是找到插入位置的元素。</strong>可以很清楚的看到，<strong>该方法对index 进行了比较，如果小于 size 的一半（size &gt;&gt; 1 右移一位，相当于除2），那么是从头往后查找元素，否则从尾部往前查找元素。然后返回这个元素。</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/2e19e894362947809f723f7bf18f4858.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>linkBefore 方法的代码也很好理解，插入数据到找到的元素的前一个位置。这里还是得<strong>判断 pred 是否为空，如果为空，那么插入的位置就是第一个位置。</strong> </p>
+<p><img src="https://img-blog.csdnimg.cn/a86f0f769ac64e82a26f1a9bc099b0d1.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="addFirst-E-e-和-addLast-E-e-方法"><a href="#addFirst-E-e-和-addLast-E-e-方法" class="headerlink" title="addFirst(E e) 和 addLast(E e) 方法"></a><strong>addFirst(E e) 和 addLast(E e) 方法</strong></h2><p>这两个方法一个插入到头部，一个插入到尾部。代码很容易理解这里就不赘述了。其代码如下： </p>
+<p><img src="https://img-blog.csdnimg.cn/db3fe219abdd4378a1ee7a8d340dddeb.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/dcb86ee185864619a602a6754df97cc1.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="addAll-int-index-Collection-lt-extends-E-gt-c-方法"><a href="#addAll-int-index-Collection-lt-extends-E-gt-c-方法" class="headerlink" title="addAll(int index, Collection&lt;? extends E&gt; c) 方法"></a><strong>addAll(int index, Collection&lt;? extends E&gt; c) 方法</strong></h2><p>这里我们先来看这一个方法，其全部代码如下，大致思路可分为三步：</p>
+<p><img src="https://img-blog.csdnimg.cn/cdb14b865b494a18993dd8f148a6a6f3.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>第一步：</strong>首先判断开始插入的位置是否越界，然后判断插入的集合长度是否为 0 ，如果为 0 ，直接返回。若不为 0，找到插入位置的节点。（node 方法上文已经分析过了）</p>
+<p><img src="https://img-blog.csdnimg.cn/d6a69b2b07a6417eb842467d7f4ee605.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>第二步：</strong>循环插入节点，链表的基础操作。</p>
+<p><img src="https://img-blog.csdnimg.cn/15fea8ec8fde493899f82a20b9f6e55a.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>第三步：</strong>插入完成之后将节点进行连接。</p>
+<p><img src="https://img-blog.csdnimg.cn/971f49302c1045ab988abe39ad355d9d.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>上述三步图例如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/073802a229f4415383772d2124208924.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>到这里这个方法的思路就很清晰了，接下来我们再看 addAll(Collection&lt;? extends E&gt; c) 方法。</p>
+<h2 id="addAll-Collection-lt-extends-E-gt-c-方法"><a href="#addAll-Collection-lt-extends-E-gt-c-方法" class="headerlink" title="addAll(Collection&lt;? extends E&gt; c) 方法"></a><strong>addAll(Collection&lt;? extends E&gt; c) 方法</strong></h2><p>该方法实际上调用的还是 addAll(int index, Collection&lt;? extends E&gt; c) 方法，只是传入的 index 为 size，表示插入到最后。</p>
+<p><img src="https://img-blog.csdnimg.cn/22d276f63bc74bcfb4f642f991eb563a.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a><strong>删除元素</strong></h1><p>LinkedList 的 remove 方法如下，这里只选取几个来分析，其他的方法思路和这几个方法类似，重点是对链表的操作，只要对链表十分的熟悉，那么 LinkedList 实现思路将会变得十分的简单。</p>
+<p><img src="https://img-blog.csdnimg.cn/dec1a2b9face45e29ae652e484f37af1.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="removeFirst-方法"><a href="#removeFirst-方法" class="headerlink" title="removeFirst() 方法"></a><strong>removeFirst() 方法</strong></h2><p>移除第一个元素，这里将 item 和 next 置空是让垃圾回收器回收这部分内存。而 removeLast 方法的代码和 removeFirst 的代码十分相似，这里就不赘述了。</p>
+<p><img src="https://img-blog.csdnimg.cn/c8197c2df7bf4533b4fd2199709bb453.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="remove-方法"><a href="#remove-方法" class="headerlink" title="remove() 方法"></a><strong>remove() 方法</strong></h2><p>其内部实现就是调用 removeFirst() 方法来移除第一个元素。</p>
+<p><img src="https://img-blog.csdnimg.cn/19cb4a5fef3a475d81d2cbb7fcc2ffbc.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="remove-Object-o-方法"><a href="#remove-Object-o-方法" class="headerlink" title="remove(Object o) 方法"></a><strong>remove(Object o) 方法</strong></h2><p>如果查看过 ArrayList.remove(Object o) 的源码，会发现这两个方法极其相似。都是<strong>遍历数组查找到要删除的元素进行删除。而通过这里对空值的判断，可以推断出 LinkedList 也是支持存放空值的。</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/40717c680a6647dab70192c007e84700.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>其中的 unlink 代码如下，删除时会判断这个节点是否是头尾节点，头尾节点特殊处理，其他位置的节点正常处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">E <span class="title function_">unlink</span><span class="params">(Node&lt;E&gt; x)</span> &#123;</span><br><span class="line">    <span class="comment">// assert x != null;</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">E</span> <span class="variable">element</span> <span class="operator">=</span> x.item;</span><br><span class="line">    <span class="keyword">final</span> LinkedList.Node&lt;E&gt; next = x.next;</span><br><span class="line">    <span class="keyword">final</span> LinkedList.Node&lt;E&gt; prev = x.prev;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (prev == <span class="literal">null</span>) &#123;<span class="comment">// 如果要删除的节点的上一个节点为空，表示这一个节点是头节点</span></span><br><span class="line">        first = next;<span class="comment">// 直接将头节点指向当前节点的下一个节点</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">// 跳过当前节点</span></span><br><span class="line">        prev.next = next;</span><br><span class="line">        x.prev = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (next == <span class="literal">null</span>) &#123;<span class="comment">// 如果要删除的节点的下一个节点为空，表示这个节点是尾节点</span></span><br><span class="line">        last = prev;<span class="comment">// 将尾节点指向当前节点的上一个节点</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">// 跳过当前节点</span></span><br><span class="line">        next.prev = prev;</span><br><span class="line">        x.next = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    x.item = <span class="literal">null</span>;</span><br><span class="line">    size--;</span><br><span class="line">    modCount++;</span><br><span class="line">    <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h2 id="remove-int-index-方法"><a href="#remove-int-index-方法" class="headerlink" title="remove(int index) 方法"></a><strong>remove(int index) 方法</strong></h2><p>看到这里，remove(int index) 方法的代码思路就很清晰了，node 方法获取要删除位置的节点，unlink 删除这个节点。（其中的 node 方法和 unlink 方法上文都已经分析过）</p>
+<p><img src="https://img-blog.csdnimg.cn/1386c3d38b4b4dcc8904ef51c449eae7.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="获取元素"><a href="#获取元素" class="headerlink" title="获取元素"></a><strong>获取元素</strong></h1><p>对于 LinkedList 而言，其提供了如下三个方法来获取元素。</p>
+<p><img src="https://img-blog.csdnimg.cn/42506bdbc3fc4efb85f950851256af30.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>因为 LinkedList 中定义了头节点和尾节点，所以其中 getFirst 和 getLast 方法就是直接返回头结点和尾节点，时间复杂度为O(1)，其代码如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/de08ddf3576648279618f82994784720.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>而对于 get(int index) 方法而言，其需要遍历数组来获取对应下标位置的信息，所以其查找效率比较低。</p>
+<p><img src="https://img-blog.csdnimg.cn/b8329b64ba3e4dcaa6df64e283d58e93.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="有关栈和队列的方法"><a href="#有关栈和队列的方法" class="headerlink" title="有关栈和队列的方法"></a><strong>有关栈和队列的方法</strong></h1><p>由于 LinkedList 实现了 Deque 接口，所以其中也包含了有关栈和队列的操作方法。其原理基本上都依托于上面所介绍到的方法。下面给出常用的操作，其余操作实现</p>
+<p><img src="https://img-blog.csdnimg.cn/9c1aed8415ac4c24ba380c6eb6410748.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a><strong>常见问题</strong></h1><h3 id="问：LinkedList-和-ArrayList-的区别？"><a href="#问：LinkedList-和-ArrayList-的区别？" class="headerlink" title="问：LinkedList 和 ArrayList 的区别？"></a><strong>问：LinkedList 和 ArrayList 的区别？</strong></h3><p>答：①ArrayList 和 LinkList 都是线程不安全的。</p>
+<p>②ArrayList 其底层用数组实现所以查找元素速度快，但新增和删除由于要在数组中移动元素，所以效率低。而 LinkedList 的查找元素速度慢，但新增和删除速度快。</p>
+<p>③ArrayList需要一份连续的内存空间，LinkedList不需要连续的内存空间，但是 LinkedList 的遍历效率没有 ArrayList 高。</p>
+<h3 id="问：LinkedList-底层是用什么数据结构实现的？"><a href="#问：LinkedList-底层是用什么数据结构实现的？" class="headerlink" title="问：LinkedList 底层是用什么数据结构实现的？"></a><strong>问：LinkedList 底层是用什么数据结构实现的？</strong></h3><p>答：是用双向链表实现的，node 节点类中分别定义了当前节点的数据、前一个节点和后一个节点。</p>
+<h3 id="问：LinkedList-中的-add-方法采用的是头插法还是尾插法？效率如何？"><a href="#问：LinkedList-中的-add-方法采用的是头插法还是尾插法？效率如何？" class="headerlink" title="问：LinkedList 中的 add() 方法采用的是头插法还是尾插法？效率如何？"></a><strong>问：LinkedList 中的 add() 方法采用的是头插法还是尾插法？效率如何？</strong></h3><p>答：add() 方法采用的是尾插法，由于 LinkedList 中定义了尾节点来保存当前链表的尾节点，所以其插入时间复杂度为O(1)，效率高。</p>
+<h3 id="问：LinkedList-采用的是链表来实现，那其-get-int-index-方法是如何实现查找数据的呢？"><a href="#问：LinkedList-采用的是链表来实现，那其-get-int-index-方法是如何实现查找数据的呢？" class="headerlink" title="问：LinkedList 采用的是链表来实现，那其 get(int index) 方法是如何实现查找数据的呢？"></a><strong>问：LinkedList 采用的是链表来实现，那其 get(int index) 方法是如何实现查找数据的呢？</strong></h3><p>答：其查找数据主要依托于 node 方法，接收下标位置，判断下标与当前链表的长度关系来选择是从头部开始遍历还是尾部开始遍历。</p>
+<p><img src="https://img-blog.csdnimg.cn/0b6293b9727441df8edc57e8ccdc6af8.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>bubble
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://couraki.com/2022/10/07/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" title="LinkedList源码分析">https://couraki.com/2022/10/07/LinkedList源码分析/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/05/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="ArrayList源码分析">
+      <i class="fa fa-chevron-left"></i> ArrayList源码分析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81Njc4MS8zMzI0NQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LinkedList%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">LinkedList简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="nav-number">2.</span> <span class="nav-text">成员变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E8%8A%82%E7%82%B9%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">内部节点类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E5%85%83%E7%B4%A0"><span class="nav-number">5.</span> <span class="nav-text">增加元素</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#add-E-e-%E6%96%B9%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">add(E e) 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#add-int-index-E-element-%E6%96%B9%E6%B3%95"><span class="nav-number">5.2.</span> <span class="nav-text">add(int index, E element) 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#addFirst-E-e-%E5%92%8C-addLast-E-e-%E6%96%B9%E6%B3%95"><span class="nav-number">5.3.</span> <span class="nav-text">addFirst(E e) 和 addLast(E e) 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#addAll-int-index-Collection-lt-extends-E-gt-c-%E6%96%B9%E6%B3%95"><span class="nav-number">5.4.</span> <span class="nav-text">addAll(int index, Collection&lt;? extends E&gt; c) 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#addAll-Collection-lt-extends-E-gt-c-%E6%96%B9%E6%B3%95"><span class="nav-number">5.5.</span> <span class="nav-text">addAll(Collection&lt;? extends E&gt; c) 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="nav-number">6.</span> <span class="nav-text">删除元素</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#removeFirst-%E6%96%B9%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">removeFirst() 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#remove-%E6%96%B9%E6%B3%95"><span class="nav-number">6.2.</span> <span class="nav-text">remove() 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#remove-Object-o-%E6%96%B9%E6%B3%95"><span class="nav-number">6.3.</span> <span class="nav-text">remove(Object o) 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#remove-int-index-%E6%96%B9%E6%B3%95"><span class="nav-number">6.4.</span> <span class="nav-text">remove(int index) 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%85%83%E7%B4%A0"><span class="nav-number">7.</span> <span class="nav-text">获取元素</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E5%85%B3%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">8.</span> <span class="nav-text">有关栈和队列的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">9.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%EF%BC%9ALinkedList-%E5%92%8C-ArrayList-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">9.0.1.</span> <span class="nav-text">问：LinkedList 和 ArrayList 的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%EF%BC%9ALinkedList-%E5%BA%95%E5%B1%82%E6%98%AF%E7%94%A8%E4%BB%80%E4%B9%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">9.0.2.</span> <span class="nav-text">问：LinkedList 底层是用什么数据结构实现的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%EF%BC%9ALinkedList-%E4%B8%AD%E7%9A%84-add-%E6%96%B9%E6%B3%95%E9%87%87%E7%94%A8%E7%9A%84%E6%98%AF%E5%A4%B4%E6%8F%92%E6%B3%95%E8%BF%98%E6%98%AF%E5%B0%BE%E6%8F%92%E6%B3%95%EF%BC%9F%E6%95%88%E7%8E%87%E5%A6%82%E4%BD%95%EF%BC%9F"><span class="nav-number">9.0.3.</span> <span class="nav-text">问：LinkedList 中的 add() 方法采用的是头插法还是尾插法？效率如何？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%EF%BC%9ALinkedList-%E9%87%87%E7%94%A8%E7%9A%84%E6%98%AF%E9%93%BE%E8%A1%A8%E6%9D%A5%E5%AE%9E%E7%8E%B0%EF%BC%8C%E9%82%A3%E5%85%B6-get-int-index-%E6%96%B9%E6%B3%95%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%9F%A5%E6%89%BE%E6%95%B0%E6%8D%AE%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="nav-number">9.0.4.</span> <span class="nav-text">问：LinkedList 采用的是链表来实现，那其 get(int index) 方法是如何实现查找数据的呢？</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bubble"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">bubble</p>
+  <div class="site-description" itemprop="description">五彩斑斓的泡泡</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mainpropath" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mainpropath" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/xxxxxxxxxx@qq.com" title="E-Mail → xxxxxxxxxx@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      链接网址
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/weixin_41746479?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_41746479?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+  </div>
+ <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=110 src="//music.163.com/outchain/player?type=0&id=3080165816&auto=0&height=90"></iframe>
+ <div id="sidebar-dimmer"></div>
+
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; Tue Aug 18 2020 08:00:00 GMT+0800 (中国标准时间) – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bubble</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">276k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:11</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+<!--使用 Gitter 实现一个 IM 即时通讯聊天室功能-->
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'Blogcouraki/community'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+  <script>
+    (function(d, w, c) {
+      w.ChatraID = 'jemail123321@163.com';
+      var s = d.createElement('script');
+      w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+      };
+      s.async = true;
+      s.src = 'https://call.chatra.io/chatra.js';
+      if (d.head) d.head.appendChild(s);
+    })(document, window, 'Chatra');
+  </script>
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '100px',
+  right: 'unset',
+  left: '22px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+    </div>
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
